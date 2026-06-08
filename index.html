@@ -1,0 +1,2236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apartment Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F6F1F8;--card:#FFFFFF;--hover:#F4EFF7;
+    --border:#ECE5F1;--border-sec:#DBD2E3;
+    --text:#2B2B2B;--ink:#1E1926;--text-sec:#6E6678;--text-muted:#A79FB2;
+    --pink:#FF00B8;--pink-strong:#D6009B;--pink-tint:rgba(255,0,184,0.07);--pink-border:rgba(255,0,184,0.26);
+    --periwinkle:#7E87F8;--periwinkle-tint:rgba(126,135,248,0.12);--periwinkle-border:rgba(126,135,248,0.32);
+    --soft-blue:#C6CDFB;--lavender:#C9A9EE;--lavender-tint:rgba(201,169,238,0.20);
+    --lime:#CDE66B;--lime-tint:rgba(205,230,107,0.22);--lime-strong:#8FA61E;
+    --safe:#1F9D6B;--safe-bg:rgba(31,157,107,0.12);--safe-border:rgba(31,157,107,0.30);
+    --review:#C2902A;--review-bg:rgba(194,144,42,0.13);--review-border:rgba(194,144,42,0.32);
+    --over:#E0466E;--over-bg:rgba(224,70,110,0.12);--over-border:rgba(224,70,110,0.30);
+    --red-border:#E0466E;--red-card:rgba(224,70,110,0.14);--red-label:#D12E5C;
+    --yellow:#C2902A;--orange:#D1762E;
+    --display:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;}
+  .app-wrapper{display:flex;min-height:100vh;}
+  .sidebar{width:236px;min-width:236px;background:var(--card);border-right:1px solid var(--border);padding:24px 0;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;}
+  .sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+  .sidebar-logo h1{font-family:var(--display);font-size:15px;color:var(--text);line-height:1.3;}
+  .sidebar-logo span{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);font-weight:500;}
+  .sidebar-reset{padding:14px 20px 4px;}
+  .nav-section-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);font-weight:600;padding:12px 20px 6px;}
+  .nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;cursor:pointer;color:var(--text-sec);font-size:13px;font-weight:400;transition:all 0.15s;border-left:2px solid transparent;text-decoration:none;}
+  .nav-item:hover{background:var(--hover);color:var(--text);}
+  .nav-item.active{color:var(--ink);font-weight:600;background:var(--pink-tint);border-left-color:var(--pink);}
+  .nav-icon{font-size:11px;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:7px;background:var(--hover);color:var(--text-muted);transition:all 0.15s;flex-shrink:0;}
+  .nav-item:hover .nav-icon{background:var(--periwinkle-tint);color:var(--periwinkle);}
+  .nav-item.active .nav-icon{background:var(--pink);color:#fff;}
+  .quick-facts{margin-top:auto;padding:16px 20px;border-top:1px solid var(--border);}
+  .quick-facts-title{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);font-weight:600;margin-bottom:10px;}
+  .qf-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;}
+  .qf-row:last-child{border-bottom:none;}
+  .qf-label{color:var(--text-sec);}
+  .qf-value{font-weight:600;color:var(--text);font-size:12px;}
+  .qf-value.accent{color:var(--periwinkle);}
+  .main{flex:1;padding:32px;max-width:100%;overflow-x:hidden;}
+  .page{display:none;}.page.active{display:block;}
+  .page-header{margin-bottom:24px;}
+  .page-header h2{font-family:var(--display);font-size:26px;color:var(--text);font-weight:400;}
+  .page-header p{color:var(--text-sec);font-size:13px;margin-top:4px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
+  .card-title{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:600;margin-bottom:12px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+
+  /* NEXT ACTION BANNER */
+  .next-action-banner{background:var(--ink);color:white;border-radius:10px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:16px;}
+  .next-action-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;opacity:0.6;font-weight:600;margin-bottom:3px;}
+  .next-action-text{font-family:var(--display);font-size:20px;line-height:1.2;}
+  .next-action-sub{font-size:12px;opacity:0.65;margin-top:3px;}
+  .next-action-arrow{margin-left:auto;font-size:20px;opacity:0.4;flex-shrink:0;}
+
+  /* DEADLINE ALERT */
+  .deadline-alert{background:var(--red-card);border:1.5px solid var(--red-border);border-radius:8px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+  .deadline-alert-text{font-size:13px;color:var(--red-label);font-weight:500;flex:1;}
+  .deadline-alert-btn{font-size:12px;color:var(--red-label);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:'DM Sans',sans-serif;}
+
+  /* READINESS */
+  .readiness-number{font-family:var(--display);font-size:64px;color:var(--text);line-height:1;margin-bottom:4px;}
+  .readiness-sub{color:var(--text-sec);font-size:13px;margin-bottom:16px;}
+  .progress-bar-wrap{background:var(--bg);border-radius:100px;height:8px;margin-bottom:12px;overflow:hidden;}
+  .progress-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--periwinkle),var(--lavender));transition:width 0.6s cubic-bezier(.4,0,.2,1);}
+  .milestones-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:7px;}
+  .milestone-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;font-size:12px;color:var(--text-sec);user-select:none;}
+  .milestone-item:hover{background:var(--hover);}
+  .milestone-item.done{background:var(--periwinkle-tint);border-color:var(--periwinkle-border);color:var(--text);}
+  .milestone-check{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--border-sec);display:flex;align-items:center;justify-content:center;font-size:8px;flex-shrink:0;color:transparent;transition:all 0.2s;}
+  .milestone-item.done .milestone-check{background:var(--periwinkle);border-color:var(--periwinkle);color:white;}
+
+  /* LEADER CARD */
+  .leader-card{background:var(--card);border:1.5px solid var(--periwinkle-border);border-radius:12px;padding:20px 24px;margin-bottom:16px;}
+  .leader-card-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--periwinkle);font-weight:600;margin-bottom:4px;}
+  .leader-name{font-family:var(--display);font-size:24px;color:var(--text);line-height:1.2;margin-bottom:8px;}
+  .leader-stats{display:flex;gap:20px;flex-wrap:wrap;margin:10px 0;}
+  .leader-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);font-weight:600;}
+  .leader-stat-value{font-family:var(--display);font-size:20px;color:var(--text);}
+  .score-ring{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:3px solid var(--periwinkle);font-family:var(--display);font-size:18px;color:var(--text);flex-shrink:0;}
+  .rank-badge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--periwinkle);color:white;font-size:11px;font-weight:700;flex-shrink:0;}
+
+  /* DATA STATUS DOTS */
+  .data-dots{display:flex;gap:4px;align-items:center;}
+  .data-dot{width:7px;height:7px;border-radius:50%;}
+  .data-dot.verified{background:var(--lime-strong);}
+  .data-dot.estimated{background:var(--border-sec);}
+  .data-dot-label{font-size:10px;color:var(--text-muted);margin-left:2px;}
+
+  /* PRIORITY CARD */
+  .priority-card{background:var(--periwinkle-tint);border:1.5px solid var(--periwinkle-border);border-radius:10px;padding:18px 22px;margin-bottom:16px;}
+  .priority-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--periwinkle);font-weight:600;margin-bottom:5px;}
+  .priority-text{font-family:var(--display);font-size:20px;color:var(--text);}
+  .priority-input-row{display:flex;gap:8px;margin-top:12px;}
+  .priority-input-row input{flex:1;border:1px solid var(--periwinkle-border);background:white;border-radius:6px;padding:7px 12px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+  /* BLOCKER */
+  .blocker-card{background:rgba(194,144,42,0.08);border:1.5px solid rgba(194,144,42,0.3);border-radius:10px;padding:16px 18px;}
+  .blocker-label{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--yellow);font-weight:600;margin-bottom:5px;}
+  .blocker-text{font-family:var(--display);font-size:18px;color:var(--text);}
+  .blocker-action{font-size:12px;color:var(--text-sec);margin-top:5px;}
+  /* DEAL BREAKER */
+  .deal-breaker-alert{background:var(--red-card);border:1.5px solid var(--red-border);border-radius:8px;padding:9px 13px;margin-top:8px;display:flex;align-items:flex-start;gap:8px;}
+  .deal-breaker-alert-text{font-size:12px;color:var(--red-label);font-weight:600;}
+  .deal-breaker-alert-items{font-size:11px;color:var(--red-label);opacity:0.85;margin-top:2px;}
+  /* WHY / WHY NOT */
+  .why-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+  .why-box{padding:9px 11px;border-radius:7px;}
+  .why-box-pro{background:rgba(31,157,107,0.07);border:1px solid rgba(31,157,107,0.22);}
+  .why-box-risk{background:rgba(224,70,110,0.06);border:1px solid rgba(224,70,110,0.16);}
+  .why-box-label{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin-bottom:3px;}
+  .why-box-pro .why-box-label{color:#1F9D6B;}
+  .why-box-risk .why-box-label{color:var(--red-label);}
+  .why-box-text{font-size:12px;color:var(--text-sec);line-height:1.4;}
+  /* SNAPSHOT STRIP */
+  .snapshot-strip{display:flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px;background:var(--card);}
+  .snap-cell{flex:1;padding:13px 15px;border-right:1px solid var(--border);min-width:0;}
+  .snap-cell:last-child{border-right:none;}
+  .snap-cell-label{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);font-weight:600;margin-bottom:3px;}
+  .snap-cell-value{font-family:var(--display);font-size:17px;color:var(--text);line-height:1.1;}
+  .snap-cell-sub{font-size:11px;color:var(--text-sec);margin-top:2px;}
+  /* BUTTONS */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;border:none;}
+  .btn-primary{background:var(--pink);color:white;}.btn-primary:hover{background:var(--pink-strong);}
+  .btn-soft{background:var(--periwinkle-tint);color:var(--text);border:1px solid var(--periwinkle-border);}.btn-soft:hover{background:var(--soft-blue);}
+  .btn-ghost{background:transparent;color:var(--text-sec);border:1px solid var(--border);}.btn-ghost:hover{background:var(--hover);color:var(--text);}
+  .btn-danger{background:transparent;color:var(--red-label);border:1px solid var(--red-border);}.btn-danger:hover{background:var(--red-card);}
+  .btn-sm{padding:5px 10px;font-size:12px;}
+  .btn-link{background:transparent;border:none;color:var(--periwinkle);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;font-family:'DM Sans',sans-serif;}
+  /* TASKS */
+  .task-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+  .task-item:last-child{border-bottom:none;}
+  .task-checkbox{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--border-sec);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;flex-shrink:0;transition:all 0.2s;}
+  .task-item.done .task-checkbox{background:var(--lime-strong);border-color:var(--lime-strong);color:white;}
+  .task-item.done .task-text{text-decoration:line-through;color:var(--text-muted);}
+  .task-text{flex:1;font-size:13px;}
+  .task-apt-tag{font-size:11px;color:var(--periwinkle);background:var(--periwinkle-tint);border-radius:4px;padding:1px 6px;cursor:pointer;}
+  .task-delete{color:var(--text-muted);cursor:pointer;font-size:15px;padding:0 4px;opacity:0;transition:opacity 0.15s;}
+  .task-item:hover .task-delete{opacity:1;}
+  .task-delete:hover{color:var(--red-label);}
+  .add-task-row{display:flex;gap:8px;margin-top:10px;}
+  .add-task-row input,.add-task-row select{border:1px solid var(--border);background:var(--bg);border-radius:6px;padding:7px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+  .add-task-row input{flex:2;}.add-task-row select{flex:1;}
+  .add-task-row input:focus{border-color:var(--periwinkle);background:white;}
+  .completion-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .completion-bar-track{flex:1;height:5px;background:var(--bg);border-radius:100px;overflow:hidden;}
+  .completion-bar-fill{height:100%;border-radius:100px;background:var(--lime-strong);transition:width 0.4s ease;}
+  .completion-pct{font-size:12px;color:var(--text-sec);font-weight:600;min-width:30px;}
+  /* FORMS */
+  .form-group{margin-bottom:13px;}
+  .form-label{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-sec);margin-bottom:5px;}
+  .form-input,.form-select,.form-textarea{width:100%;border:1px solid var(--border);background:var(--bg);border-radius:6px;padding:7px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;transition:border-color 0.15s;}
+  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--periwinkle);background:white;}
+  .form-textarea{resize:vertical;min-height:56px;}
+  /* FILTER BAR */
+  .filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+  .filter-bar input{flex:1;min-width:150px;border:1px solid var(--border);background:white;border-radius:6px;padding:7px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+  .filter-bar select{border:1px solid var(--border);background:white;border-radius:6px;padding:7px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;cursor:pointer;}
+  /* APARTMENT CARDS */
+  .dq-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:17px 20px;margin-bottom:11px;transition:box-shadow 0.2s;}
+  .dq-card:hover{box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+  .dq-card.rank-1{border-left:3px solid var(--periwinkle);}
+  .dq-card.rank-2{border-left:3px solid var(--lavender);}
+  .dq-card.rank-3{border-left:3px solid var(--soft-blue);}
+  .dq-card.is-leader{border:2px solid var(--periwinkle);}
+  .dq-card.deal-breaker{border-left:3px solid var(--red-border);}
+  .dq-card.eliminated{opacity:0.6;}
+  .dq-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .dq-name{font-family:var(--display);font-size:17px;color:var(--text);}
+  .dq-meta{font-size:12px;color:var(--text-sec);margin-top:5px;display:flex;gap:12px;flex-wrap:wrap;}
+  .dq-costs{display:flex;gap:14px;margin-top:9px;padding-top:9px;border-top:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+  .apt-notes{font-size:12px;color:var(--text-sec);margin-top:8px;border-top:1px solid var(--border);padding-top:7px;}
+  /* COST PROMINENCE */
+  .true-cost-display{font-family:var(--display);font-size:24px;color:var(--text);line-height:1;}
+  .true-cost-label{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);font-weight:600;}
+  /* BADGES */
+  .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+  .estimated-tag{background:var(--lime-tint);color:var(--lime-strong);}
+  .entered-tag{background:var(--periwinkle-tint);color:#5B63E0;}
+  .status-badge{display:inline-block;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;white-space:nowrap;}
+  .status-researching{background:var(--lime-tint);color:var(--lime-strong);border:1px solid rgba(143,166,30,0.3);}
+  .status-touring{background:var(--periwinkle-tint);color:#5B63E0;border:1px solid var(--periwinkle-border);}
+  .status-waiting{background:rgba(194,144,42,0.15);color:#9A6E16;border:1px solid rgba(194,144,42,0.3);}
+  .status-app-ready{background:var(--lavender-tint);color:#8b5cad;border:1px solid rgba(201,169,238,0.5);}
+  .status-applied{background:rgba(240,166,247,0.20);color:#9a2aad;border:1px solid rgba(240,166,247,0.4);}
+  .status-approved{background:rgba(31,157,107,0.15);color:#1F9D6B;border:1px solid rgba(31,157,107,0.3);}
+  .status-rejected,.status-eliminated{background:var(--red-card);color:var(--red-label);border:1px solid rgba(224,70,110,0.25);}
+  .status-leader{background:var(--periwinkle);color:white;border:1px solid var(--periwinkle);}
+  .priority-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
+  .priority-high{background:rgba(31,157,107,0.18);color:#178A5D;border:1px solid rgba(31,157,107,0.35);}
+  .priority-medium{background:rgba(194,144,42,0.15);color:#9A6E16;border:1px solid rgba(194,144,42,0.3);}
+  .priority-low{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+  .priority-reasons{margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;}
+  .priority-reason-item{font-size:10px;color:var(--text-sec);background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px;}
+  .afford-pass{background:rgba(31,157,107,0.15);color:#178A5D;border:1px solid rgba(31,157,107,0.3);display:inline-block;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;}
+  .afford-stretch{background:rgba(194,144,42,0.15);color:#9A6E16;border:1px solid rgba(194,144,42,0.3);display:inline-block;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;}
+  .afford-fail{background:var(--red-card);color:var(--red-label);border:1px solid rgba(224,70,110,0.3);display:inline-block;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;}
+  .approval-high{background:rgba(31,157,107,0.15);color:#178A5D;border:1px solid rgba(31,157,107,0.3);display:inline-block;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;}
+  .approval-medium{background:rgba(194,144,42,0.15);color:#9A6E16;border:1px solid rgba(194,144,42,0.3);display:inline-block;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;}
+  .approval-low{background:var(--red-card);color:var(--red-label);border:1px solid rgba(224,70,110,0.3);display:inline-block;padding:3px 9px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;}
+  .avail-now{color:#178A5D;font-weight:600;font-size:11px;}
+  .avail-soon{color:var(--yellow);font-weight:600;font-size:11px;}
+  .avail-later{color:var(--text-sec);font-size:11px;}
+  .special-badge{display:inline-block;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(31,157,107,0.12);color:#178A5D;border:1px solid rgba(31,157,107,0.3);}
+  /* COST DISPLAY */
+  .cost-result-box{background:var(--bg);border-radius:8px;padding:16px;text-align:center;margin-top:14px;}
+  .cost-result-label{font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:600;margin-bottom:4px;}
+  .cost-result-amount{font-family:var(--display);font-size:40px;color:var(--text);line-height:1.1;}
+  .cost-status{display:inline-block;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;text-transform:uppercase;margin-top:8px;white-space:nowrap;}
+  .cost-green{background:rgba(31,157,107,0.15);color:#1F9D6B;}
+  .cost-yellow{background:rgba(194,144,42,0.15);color:#9A6E16;}
+  .cost-orange{background:rgba(209,118,46,0.15);color:#9A5A16;}
+  .cost-red{background:var(--red-card);color:var(--red-label);}
+  /* MOVE TARGET */
+  .move-target-bar{display:flex;align-items:center;gap:18px;padding:11px 15px;background:var(--periwinkle-tint);border:1px solid var(--periwinkle-border);border-radius:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .move-target-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:600;}
+  .move-target-date{font-family:var(--display);font-size:17px;color:var(--text);}
+  .move-target-days strong{color:var(--periwinkle);font-size:18px;font-family:var(--display);}
+  .move-target-edit{margin-left:auto;display:flex;align-items:center;gap:6px;}
+  .move-target-edit input{border:1px solid var(--periwinkle-border);background:white;border-radius:5px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);outline:none;width:130px;}
+  /* WHY #1 */
+  .why-number-one{margin-top:12px;padding:11px 13px;background:rgba(126,135,248,0.08);border-radius:8px;border:1px solid var(--periwinkle-border);}
+  .why-number-one-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--periwinkle);font-weight:600;margin-bottom:7px;}
+  .why-number-one-item{font-size:12px;color:var(--text-sec);padding:2px 0;display:flex;align-items:center;gap:6px;}
+  .why-number-one-item::before{content:'→';color:var(--periwinkle);font-size:11px;}
+  /* CASH REALITY */
+  .cash-reality-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:14px;}
+  .cr-stat{padding:11px 13px;background:var(--bg);border-radius:8px;border:1px solid var(--border);}
+  .cr-stat-label{font-size:11px;color:var(--text-sec);margin-bottom:3px;}
+  .cr-stat-value{font-family:var(--display);font-size:20px;color:var(--text);}
+  /* COMPARISON TABLE */
+  .comparison-table-wrap{overflow-x:auto;}
+  .comparison-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .comparison-table th{text-align:left;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);font-weight:600;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
+  .comparison-table th:hover{color:var(--text);}
+  .comparison-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .comparison-table tr:last-child td{border-bottom:none;}
+  .comparison-table tr:hover td{background:var(--hover);}
+  .comparison-table tr.top-row td{background:var(--periwinkle-tint);}
+  .sort-arrow{display:inline;font-size:10px;}
+  /* DECISION CARDS */
+  .decision-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:7px;margin-bottom:14px;}
+  .decision-item{border:1px solid var(--border);border-radius:8px;padding:9px 11px;cursor:pointer;transition:all 0.15s;user-select:none;}
+  .decision-item:hover{background:var(--hover);}
+  .decision-item.yes{background:rgba(31,157,107,0.08);border-color:rgba(31,157,107,0.4);}
+  .decision-item.no{background:var(--red-card);border-color:rgba(224,70,110,0.25);}
+  .decision-label{font-size:12px;color:var(--text-sec);margin-bottom:5px;}
+  .decision-toggle{font-size:11px;font-weight:600;text-transform:uppercase;}
+  .decision-item.yes .decision-toggle{color:#1F9D6B;}
+  .decision-item.no .decision-toggle{color:var(--red-label);}
+  .decision-item:not(.yes):not(.no) .decision-toggle{color:var(--text-muted);}
+  .score-display{text-align:center;padding:14px;background:var(--periwinkle-tint);border-radius:8px;border:1px solid var(--periwinkle-border);}
+  .score-number{font-family:var(--display);font-size:44px;color:var(--text);line-height:1;}
+  .score-label{font-size:12px;color:var(--text-sec);margin-top:4px;}
+  /* CONTENDER */
+  .contender-block{background:var(--periwinkle-tint);border:1.5px solid var(--periwinkle-border);border-radius:12px;padding:22px;}
+  .contender-name{font-family:var(--display);font-size:30px;margin-bottom:4px;}
+  .contender-stats{display:flex;gap:22px;margin:12px 0;flex-wrap:wrap;}
+  .contender-stat-label{font-size:10px;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.07em;}
+  .contender-stat-value{font-size:18px;font-weight:600;color:var(--text);}
+  /* GRAVEYARD */
+  .grave-card{background:var(--card);border:1px solid rgba(224,70,110,0.20);border-left:3px solid var(--red-border);border-radius:8px;padding:13px 16px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+  .grave-name{font-weight:600;font-size:14px;flex:1;}
+  .grave-reason{font-size:12px;color:var(--text-sec);flex:2;}
+  /* PAYDAY */
+  .snapshot-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:13px 16px;margin-bottom:8px;}
+  .snapshot-date{font-size:11px;color:var(--text-muted);margin-bottom:7px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;}
+  .snapshot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  .snapshot-item-label{font-size:11px;color:var(--text-sec);}
+  .snapshot-item-value{font-size:15px;font-weight:600;color:var(--text);margin-top:2px;}
+  /* CALL SHEET */
+  .call-sheet-row{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+  .call-sheet-row:last-child{border-bottom:none;}
+  .call-sheet-q{font-size:12px;color:var(--text-sec);flex:1.2;padding-top:7px;font-weight:500;}
+  .call-sheet-a{flex:1.8;}
+  .call-sheet-a input{width:100%;border:1px solid var(--border);background:var(--bg);border-radius:5px;padding:6px 10px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+  .call-sheet-a input:focus{border-color:var(--periwinkle);background:white;}
+  /* LEASE RISK */
+  .risk-check-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer;user-select:none;}
+  .risk-check-item:last-child{border-bottom:none;}
+  .risk-check-box{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border-sec);display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;flex-shrink:0;transition:all 0.15s;}
+  .risk-check-item.checked .risk-check-box{background:var(--lime-strong);border-color:var(--lime-strong);color:white;}
+  .risk-check-item.checked span{color:var(--text-muted);}
+  /* INLINE STATUS SELECT */
+  .inline-status{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;cursor:pointer;outline:none;padding:2px 4px;border-radius:4px;}
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(43,43,43,0.45);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--card);border-radius:12px;padding:26px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;position:relative;}
+  .modal-wide{max-width:820px;}
+  .modal-title{font-family:var(--display);font-size:21px;margin-bottom:18px;}
+  .modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);}
+  .modal-close:hover{color:var(--text);}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);}
+  /* MODAL TIERS */
+  .modal-tier-2{border-top:1px solid var(--border);margin-top:16px;padding-top:4px;}
+  .modal-tier-toggle{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--periwinkle);cursor:pointer;padding:8px 0;display:flex;align-items:center;gap:4px;}
+  .modal-tier-content{display:none;}
+  .modal-tier-content.open{display:block;}
+  .empty-state{text-align:center;padding:36px 20px;color:var(--text-muted);}
+  .empty-state-icon{font-size:30px;margin-bottom:10px;}
+  .empty-state-text{font-size:14px;}
+  .section-divider{font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);font-weight:600;margin:14px 0 7px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+  @media(max-width:768px){
+    .app-wrapper{flex-direction:column;}
+    .sidebar{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;padding:10px 0;}
+    .sidebar-logo{display:none;}.quick-facts{display:none;}.nav-section-label{display:none;}
+    .nav-item{padding:7px 9px;font-size:11px;border-left:none;border-bottom:2px solid transparent;}
+    .nav-item.active{border-bottom-color:var(--periwinkle);border-left:none;}
+    .main{padding:14px;}
+    .grid-2,.grid-3{grid-template-columns:1fr;}
+    .snapshot-grid{grid-template-columns:1fr 1fr;}
+    .contender-stats{flex-direction:column;gap:10px;}
+    .call-sheet-row{flex-direction:column;gap:4px;}
+    .dq-header{flex-direction:column;}
+    .why-pair{grid-template-columns:1fr;}
+    .snapshot-strip{flex-direction:column;}
+    .snap-cell{border-right:none;border-bottom:1px solid var(--border);}
+    .snap-cell:last-child{border-bottom:none;}
+    .leader-stats{gap:12px;}
+    .add-task-row{flex-direction:column;}
+    .deadline-edit-row{flex-direction:column;align-items:stretch;}
+    .lb-row{flex-wrap:wrap;}
+  }
+
+  /* ── DECISION ENGINE ADDITIONS ── */
+  .afford-pass,.afford-stretch,.afford-fail,.approval-high,.approval-medium,.approval-low,.tag,.true-cost-label,.priority-badge{white-space:nowrap;}
+  .dash-section-label{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--text-muted);font-weight:600;margin:22px 0 9px;}
+  .grid-2{margin-bottom:16px;}
+
+  /* SECTION 1 — TOP CONTENDER HERO */
+  .tc-hero{background:var(--card);border:1.5px solid var(--periwinkle-border);border-radius:14px;padding:24px 26px;margin-bottom:4px;}
+  .tc-hero.is-ready{border-color:rgba(31,157,107,0.5);}
+  .tc-hero-eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--periwinkle);font-weight:600;margin-bottom:5px;}
+  .tc-hero-name{font-family:var(--display);font-size:32px;color:var(--text);line-height:1.1;}
+  .tc-hero-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin:16px 0;background:var(--bg);}
+  .tc-metric{padding:13px 15px;border-right:1px solid var(--border);}
+  .tc-metric:last-child{border-right:none;}
+  .tc-metric-label{font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);font-weight:600;margin-bottom:4px;}
+  .tc-metric-value{font-family:var(--display);font-size:21px;color:var(--text);line-height:1.05;}
+  .tc-metric-sub{margin-top:4px;}
+  .afford-stack{display:flex;flex-direction:column;gap:5px;align-items:flex-start;}
+
+  /* AFFORDABILITY (reuse afford-* classes; combined variants inherit) */
+  .afford-pair{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+  /* READY / NOT READY PILL */
+  .ready-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;}
+  .ready-pill.yes{background:rgba(31,157,107,0.16);color:#178A5D;border:1px solid rgba(31,157,107,0.4);}
+  .ready-pill.no{background:rgba(194,144,42,0.14);color:#9A6E16;border:1px solid rgba(194,144,42,0.35);}
+  .ready-pill .dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+
+  /* READINESS BAR */
+  .readiness-row{display:flex;align-items:center;gap:9px;margin-top:4px;}
+  .readiness-track{flex:1;height:6px;background:var(--bg);border:1px solid var(--border);border-radius:100px;overflow:hidden;min-width:80px;}
+  .readiness-fill{height:100%;border-radius:100px;background:var(--periwinkle);transition:width 0.4s ease;}
+  .readiness-fill.full{background:var(--lime-strong);}
+  .readiness-pct-label{font-size:11px;color:var(--text-sec);font-weight:600;min-width:54px;}
+
+  /* READINESS CHECKLIST */
+  .readiness-checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;margin-top:10px;}
+  .rc-item{display:flex;align-items:center;gap:9px;padding:8px 11px;border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text-sec);white-space:nowrap;}
+  .rc-item.known{background:rgba(31,157,107,0.06);border-color:rgba(31,157,107,0.25);color:var(--text);}
+  .rc-check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border-sec);display:flex;align-items:center;justify-content:center;font-size:9px;color:transparent;flex-shrink:0;}
+  .rc-item.known .rc-check{background:var(--lime-strong);border-color:var(--lime-strong);color:white;}
+
+  /* WHY NOT SIGNED */
+  .whynot-box{display:flex;align-items:flex-start;gap:8px;padding:9px 12px;border-radius:8px;background:rgba(194,144,42,0.08);border:1px solid rgba(194,144,42,0.28);margin-top:8px;}
+  .whynot-box.clear{background:rgba(31,157,107,0.08);border-color:rgba(31,157,107,0.28);}
+  .whynot-label{font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#9A6E16;font-weight:700;margin-bottom:2px;}
+  .whynot-box.clear .whynot-label{color:#178A5D;}
+  .whynot-text{font-size:13px;color:var(--text);font-weight:500;line-height:1.35;}
+  .whynot-inline{font-size:11px;color:#9A6E16;background:rgba(194,144,42,0.12);border:1px solid rgba(194,144,42,0.28);border-radius:5px;padding:2px 8px;display:inline-block;}
+
+  /* LEADERBOARD */
+  .leaderboard{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .lb-row{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 18px;cursor:pointer;transition:box-shadow 0.2s;}
+  .lb-row:hover{box-shadow:0 2px 10px rgba(0,0,0,0.05);}
+  .lb-row.lb-1{border-left:3px solid var(--periwinkle);}
+  .lb-row.lb-2{border-left:3px solid var(--lavender);}
+  .lb-row.lb-3{border-left:3px solid var(--soft-blue);}
+  .lb-rank{font-family:var(--display);font-size:22px;color:var(--text-muted);width:32px;text-align:center;flex-shrink:0;}
+  .lb-name{font-family:var(--display);font-size:18px;color:var(--text);flex:1;min-width:0;}
+  .lb-cost{font-family:var(--display);font-size:17px;color:var(--text);text-align:right;}
+  .lb-cost-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;}
+
+  /* READY TABLE */
+  .ready-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .ready-table td{padding:9px 4px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .ready-table tr:last-child td{border-bottom:none;}
+  .ready-table .rt-name{font-weight:500;color:var(--text);}
+  .ready-table .rt-status{text-align:right;}
+
+  /* BLOCKERS */
+  .blocker-list{display:flex;flex-direction:column;gap:8px;}
+  .blocker-row{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--yellow);border-radius:9px;padding:13px 16px;}
+  .blocker-row.is-dealbreaker{border-left-color:var(--red-border);}
+  .blocker-apt{font-family:var(--display);font-size:16px;color:var(--text);flex-shrink:0;min-width:140px;}
+  .blocker-reasons{flex:1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .blocker-chip{font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px;background:rgba(194,144,42,0.13);color:#9A6E16;border:1px solid rgba(194,144,42,0.3);display:inline-flex;align-items:center;gap:5px;}
+  .blocker-chip::before{content:'→';opacity:0.6;}
+  .blocker-chip.hard{background:var(--red-card);color:var(--red-label);border-color:rgba(224,70,110,0.3);}
+  .blocker-chip.hard::before{content:'✕';opacity:0.7;}
+
+  /* DECISION DEADLINE */
+  .deadline-hero{padding:6px 0 12px;}
+  .deadline-days{font-family:var(--display);font-size:52px;line-height:1;color:var(--text);}
+  .deadline-days.urgent{color:var(--red-label);}
+  .deadline-days.soon{color:var(--orange);}
+  .deadline-sub{font-size:13px;color:var(--text-sec);margin-top:4px;}
+  .deadline-date-line{font-size:12px;color:var(--text-muted);margin-top:2px;}
+  .deadline-meter{height:6px;border-radius:100px;background:var(--bg);border:1px solid var(--border);overflow:hidden;margin:12px 0 4px;}
+  .deadline-meter-fill{height:100%;border-radius:100px;background:var(--periwinkle);}
+  .deadline-meter-fill.soon{background:var(--orange);}
+  .deadline-meter-fill.urgent{background:var(--red-border);}
+  .deadline-edit-row{display:flex;gap:8px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+
+  /* DECISION SUMMARY */
+  .decision-summary{background:var(--ink);color:white;border-radius:12px;padding:20px 24px;margin-top:16px;}
+  .decision-summary-label{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;opacity:0.55;font-weight:600;margin-bottom:8px;}
+  .decision-summary-text{font-family:var(--display);font-size:19px;line-height:1.4;}
+  .decision-summary-text em{font-style:normal;font-weight:600;color:var(--soft-blue);}
+
+  /* ── COMMAND-CENTER TYPE POLISH ── */
+  .readiness-number,.tc-hero-name,.deadline-days,.cost-result-amount,.score-number,.contender-name,.true-cost-display,.tc-metric-value,.snap-cell-value,.cr-stat-value,.lb-name,.lb-cost,.lb-rank,.leader-name,.leader-stat-value,.next-action-text,.dq-name,.page-header h2,.move-target-date,.blocker-text,.blocker-apt,.priority-text,.modal-title,.readiness-sub,.contender-stat-value{font-weight:600;letter-spacing:-0.02em;}
+  .readiness-number,.deadline-days,.cost-result-amount,.score-number,.contender-name{font-weight:700;letter-spacing:-0.035em;}
+  .nav-section-label,.card-title,.tc-hero-eyebrow,.leader-card-label,.priority-label{font-weight:700;}
+  .sidebar-logo h1{letter-spacing:-0.01em;}
+  .tc-hero-name,.dq-name,.lb-name,.leader-name,.contender-name,.blocker-apt{white-space:nowrap;}
+
+  /* ── DENSITY (tweakable) ── */
+  body.tw-applying *{transition:none !important;}
+  body.density-compact{font-size:13px;}
+  body.density-compact .card{padding:15px;margin-bottom:12px;}
+  body.density-compact .dq-card{padding:13px 15px;margin-bottom:8px;}
+  body.density-compact .main{padding:22px;}
+  body.density-compact .leader-card,body.density-compact .contender-block,body.density-compact .tc-hero{padding:16px 18px;}
+
+  /* ── TWEAKS PANEL ── */
+  #tweaks-panel{position:fixed;bottom:20px;right:20px;width:248px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 12px 40px rgba(30,25,38,0.16);z-index:2000;padding:16px 16px 18px;display:none;font-family:'DM Sans',sans-serif;}
+  #tweaks-panel.open{display:block;}
+  .tw-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .tw-title{font-family:var(--display);font-size:15px;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  .tw-close{background:none;border:none;font-size:17px;color:var(--text-muted);cursor:pointer;line-height:1;padding:2px;}
+  .tw-close:hover{color:var(--ink);}
+  .tw-group{margin-bottom:14px;}
+  .tw-group:last-child{margin-bottom:0;}
+  .tw-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:700;margin-bottom:7px;}
+  .tw-seg{display:flex;gap:5px;}
+  .tw-seg button{flex:1;border:1px solid var(--border);background:var(--bg);border-radius:7px;padding:7px 4px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--text-sec);cursor:pointer;transition:all 0.13s;}
+  .tw-seg button:hover{border-color:var(--border-sec);}
+  .tw-seg button.active{background:var(--ink);border-color:var(--ink);color:#fff;}
+  .tw-swatches{display:flex;gap:8px;}
+  .tw-swatch{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;position:relative;transition:transform 0.12s;outline:2px solid var(--border);outline-offset:-2px;}
+  .tw-swatch:hover{transform:scale(1.08);}
+  .tw-swatch.active{outline:2px solid var(--ink);outline-offset:2px;}
+</style>
+</head>
+<body>
+<div class="app-wrapper">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <span>Sierra's</span>
+      <h1>Lease Decision<br>Engine</h1>
+    </div>
+    <div class="nav-section-label">Decide</div>
+    <a class="nav-item active" onclick="showPage('dashboard')" href="#">
+      <span class="nav-icon">◎</span> Decision Board
+    </a>
+    <a class="nav-item" onclick="showPage('contender')" href="#">
+      <span class="nav-icon">★</span> Top Contender
+    </a>
+    <div class="nav-section-label">Apartments</div>
+    <a class="nav-item" onclick="showPage('queue')" href="#">
+      <span class="nav-icon">⊕</span> Discovery Queue
+    </a>
+    <a class="nav-item" onclick="showPage('compare')" href="#">
+      <span class="nav-icon">⇔</span> Compare
+    </a>
+    <a class="nav-item" onclick="showPage('graveyard')" href="#">
+      <span class="nav-icon">✕</span> Graveyard
+    </a>
+    <div class="nav-section-label">Cost</div>
+    <a class="nav-item" onclick="showPage('monthly')" href="#">
+      <span class="nav-icon">$</span> Real Monthly Cost
+    </a>
+    <a class="nav-item" onclick="showPage('movein')" href="#">
+      <span class="nav-icon">⊞</span> Move-In Cost
+    </a>
+    <div class="quick-facts">
+      <div class="quick-facts-title">Affordability Bands</div>
+      <div class="qf-row"><span class="qf-label">Solo Target</span><span class="qf-value">≤ $1,450</span></div>
+      <div class="qf-row"><span class="qf-label">Solo Stretch</span><span class="qf-value">≤ $1,600</span></div>
+      <div class="qf-row"><span class="qf-label">Combined Target</span><span class="qf-value accent">≤ $1,750</span></div>
+      <div class="qf-row"><span class="qf-label">Combined Stretch</span><span class="qf-value">≤ $2,050</span></div>
+      <div class="qf-row"><span class="qf-label">Hard Stop</span><span class="qf-value" style="color:var(--red-label)">$1,650+ solo</span></div>
+    </div>
+    <div class="sidebar-reset">
+      <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center" onclick="clearEverything()">↺ Start Over</button>
+    </div>
+  </nav>
+
+  <main class="main">
+    <!-- DECISION BOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <h2>If you signed a lease tonight…</h2>
+        <p id="dash-date-line"></p>
+      </div>
+
+      <!-- SECTION 1: TOP CONTENDER -->
+      <div id="dash-top-contender"></div>
+
+      <!-- SECTION 2: TOP 3 LEADERBOARD -->
+      <div class="dash-section-label">Top 3 Leaderboard</div>
+      <div id="dash-leaderboard"></div>
+
+      <div class="grid-2">
+        <!-- SECTION 3: READY TO APPLY -->
+        <div class="card" style="margin-bottom:0">
+          <div class="card-title">Ready to Apply</div>
+          <div id="dash-ready-table"></div>
+        </div>
+        <!-- SECTION 5: DECISION DEADLINE -->
+        <div class="card" style="margin-bottom:0">
+          <div class="card-title">Decision Deadline</div>
+          <div id="dash-deadline"></div>
+          <div class="deadline-edit-row">
+            <input type="date" id="move-target-input" class="form-input" style="max-width:170px" onchange="saveMoveTarget()" />
+            <button class="btn btn-ghost btn-sm" onclick="clearMoveTarget()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: APPLICATION BLOCKERS -->
+      <div class="dash-section-label">Application Blockers <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--text-sec)">— why you're still shopping</span></div>
+      <div id="dash-blockers"></div>
+    </div>
+
+    <!-- DISCOVERY QUEUE (master + leaderboard merged) -->
+    <div id="page-queue" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <h2>Discovery Queue</h2>
+          <p>Master apartment database. Enter once — appears everywhere.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-danger btn-sm" onclick="clearSection('queue')">Clear All</button>
+          <button class="btn btn-primary" onclick="openQueueModal()">+ Add Listing</button>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="queue-search" placeholder="Search by name..." oninput="renderQueue()" />
+        <select id="queue-filter-status" onchange="renderQueue()">
+          <option value="">All Statuses</option>
+          <option value="researching">Researching</option>
+          <option value="touring">Touring</option>
+          <option value="waiting">Waiting for Numbers</option>
+          <option value="app-ready">Application Ready</option>
+          <option value="applied">Applied</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="eliminated">Eliminated</option>
+          <option value="leader">Current Leader</option>
+        </select>
+        <select id="queue-sort" onchange="renderQueue()">
+          <option value="score">Sort by Score</option>
+          <option value="readiness">Sort by Readiness</option>
+          <option value="status">Sort by Status</option>
+          <option value="rent-asc">Rent ↑</option>
+          <option value="rent-desc">Rent ↓</option>
+          <option value="name">Name</option>
+        </select>
+        <select id="queue-view" onchange="renderQueue()">
+          <option value="active">Active Only</option>
+          <option value="all">Show All</option>
+        </select>
+      </div>
+      <div id="queue-list"></div>
+    </div>
+
+    <!-- COMPARE -->
+    <div id="page-compare" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <h2>Side-by-Side Comparison</h2>
+          <p>Click a column header to sort.</p>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="clearSection('monthly-costs')">Clear Saved Costs</button>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div class="comparison-table-wrap">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th onclick="sortCompare('name')">Property <span class="sort-arrow" id="sort-name"></span></th>
+                <th onclick="sortCompare('score')">Score <span class="sort-arrow" id="sort-score"></span></th>
+                <th onclick="sortCompare('monthly')">Real Monthly <span class="sort-arrow" id="sort-monthly"></span></th>
+                <th onclick="sortCompare('movein')">Move-In <span class="sort-arrow" id="sort-movein"></span></th>
+                <th>Solo</th>
+                <th>Combined</th>
+                <th onclick="sortCompare('readiness')">Ready to Apply <span class="sort-arrow" id="sort-readiness"></span></th>
+                <th>Why Not Signed Yet</th>
+                <th onclick="sortCompare('status')">Status <span class="sort-arrow" id="sort-status"></span></th>
+              </tr>
+            </thead>
+            <tbody id="compare-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP CONTENDER -->
+    <div id="page-contender" class="page">
+      <div class="page-header">
+        <h2>Top Contender</h2>
+        <p>Your current best option.</p>
+      </div>
+      <div id="contender-content"></div>
+    </div>
+
+    <!-- GRAVEYARD -->
+    <div id="page-graveyard" class="page">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <h2>Apartment Graveyard</h2>
+          <p>Already eliminated. Don't revisit.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-danger btn-sm" onclick="clearSection('graveyard')">Clear All</button>
+          <button class="btn btn-ghost" onclick="openGraveModal()">+ Add Rejected</button>
+        </div>
+      </div>
+      <div id="graveyard-list"></div>
+    </div>
+
+    <!-- MONTHLY COST -->
+    <div id="page-monthly" class="page">
+      <div class="page-header">
+        <h2>Real Monthly Cost</h2>
+        <p>Full breakdown — what you'll actually pay every month.</p>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="form-group">
+          <label class="form-label">Calculate For</label>
+          <select class="form-select" id="monthly-apt-select" onchange="loadMonthlyCost()">
+            <option value="">— Choose an apartment —</option>
+            <option value="__custom__">Custom Entry</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Monthly Expenses</div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Quoted Rent (post-tour)</label><input type="number" class="form-input" id="mc-charged" placeholder="Actual quoted price — overrides advertised rent" oninput="calcMonthly()" /><div style="font-size:11px;color:var(--text-muted);margin-top:2px">Enter after touring. Overrides advertised rent when filled in.</div></div>
+          <div class="form-group"><label class="form-label">Advertised Rent <span style="font-size:11px;color:var(--text-muted);font-weight:400">(online)</span></label><input type="number" class="form-input" id="mc-rent" placeholder="e.g. 1300" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Pet Rent <span class="tag estimated-tag">est. $25</span></label><input type="number" class="form-input" id="mc-pet" placeholder="25" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Electric <span class="tag estimated-tag">est. $120</span></label><input type="number" class="form-input" id="mc-electric" placeholder="120" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Water / Sewer <span class="tag estimated-tag">est. $50</span></label><input type="number" class="form-input" id="mc-water" placeholder="50" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Trash <span class="tag estimated-tag">est. $25</span></label><input type="number" class="form-input" id="mc-trash" placeholder="25" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Internet <span class="tag estimated-tag">est. $70</span></label><input type="number" class="form-input" id="mc-internet" placeholder="70" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Renters Insurance <span class="tag estimated-tag">est. $15</span></label><input type="number" class="form-input" id="mc-insurance" placeholder="15" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Parking <span class="tag estimated-tag">est. $0</span></label><input type="number" class="form-input" id="mc-parking" placeholder="0" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Apt Fees (Tech/Pkg/Amenity) <span class="tag estimated-tag">est. $75</span></label><input type="number" class="form-input" id="mc-aptfees" placeholder="75" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Valet Trash / Pest <span class="tag estimated-tag">est. $0</span></label><input type="number" class="form-input" id="mc-valet" placeholder="0" oninput="calcMonthly()" /></div>
+          <div class="form-group"><label class="form-label">Other Monthly Fees</label><input type="number" class="form-input" id="mc-other" placeholder="0" oninput="calcMonthly()" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Specials / Concessions (monthly savings) <span class="tag estimated-tag">reduces cost</span></label><input type="number" class="form-input" id="mc-specials" placeholder="e.g. 108 = 1 free month ÷ 12" oninput="calcMonthly()" /></div>
+        <div class="cost-result-box">
+          <div class="cost-result-label">Real Monthly Cost</div>
+          <div class="cost-result-amount" id="monthly-total">$—</div>
+          <div id="monthly-status"></div>
+          <div id="monthly-afford" style="margin-top:6px"></div>
+          <div id="monthly-vs-adv" style="margin-top:6px;font-size:12px;color:var(--text-sec)"></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:8px">Blank fields use default estimates</div>
+        </div>
+        <div style="text-align:right;margin-top:10px">
+          <button class="btn btn-primary" onclick="saveMonthlyCost()">Save to Apartment</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVE-IN COST -->
+    <div id="page-movein" class="page">
+      <div class="page-header">
+        <h2>Move-In Cash Required</h2>
+        <p>Every dollar needed to sign the lease.</p>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="form-group"><label class="form-label">Calculate For</label>
+          <select class="form-select" id="movein-apt-select" onchange="loadMoveinCost()">
+            <option value="">— Choose an apartment —</option>
+            <option value="__custom__">Custom Entry</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Move-In Fees</div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Application Fee <span class="tag estimated-tag">est. $75</span></label><input type="number" class="form-input" id="mi-app" placeholder="75" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">Admin Fee <span class="tag estimated-tag">est. $150</span></label><input type="number" class="form-input" id="mi-admin" placeholder="150" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">Security Deposit <span class="tag estimated-tag">est. 1 mo</span></label><input type="number" class="form-input" id="mi-deposit" placeholder="1300" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">Pet Deposit <span class="tag estimated-tag">est. $300</span></label><input type="number" class="form-input" id="mi-pet-dep" placeholder="300" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">Pet Fee <span class="tag estimated-tag">est. $300</span></label><input type="number" class="form-input" id="mi-pet-fee" placeholder="300" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">First Month Rent</label><input type="number" class="form-input" id="mi-first-month" placeholder="From rent" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">Prorated Rent <span class="tag estimated-tag">est. $0</span></label><input type="number" class="form-input" id="mi-prorated" placeholder="0" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">Utility Setup <span class="tag estimated-tag">est. $50</span></label><input type="number" class="form-input" id="mi-util" placeholder="50" oninput="calcMovein()" /></div>
+          <div class="form-group"><label class="form-label">Other</label><input type="number" class="form-input" id="mi-other" placeholder="0" oninput="calcMovein()" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Specials / Concessions (reduces move-in)</label><input type="number" class="form-input" id="mi-specials" placeholder="e.g. 500 off first month" oninput="calcMovein()" /></div>
+        <div class="cost-result-box" style="border:2px solid var(--periwinkle-border)">
+          <div class="cost-result-label">Move-In Cash Required</div>
+          <div class="cost-result-amount" id="movein-total">$—</div>
+          <div id="movein-gap-display" style="margin-top:8px"></div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:8px">Blank fields use conservative estimates</div>
+        </div>
+        <div style="text-align:right;margin-top:10px">
+          <button class="btn btn-primary" onclick="saveMoveinCost()">Save to Apartment</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- APARTMENT MODAL (master record + decision card + tour + call sheet tabs) -->
+<div class="modal-overlay" id="queue-modal">
+  <div class="modal modal-wide">
+    <button class="modal-close" onclick="closeQueueModal()">✕</button>
+    <div class="modal-title" id="queue-modal-title">Add Listing</div>
+    <input type="hidden" id="queue-modal-id" />
+
+    <!-- TIER 1: ALWAYS VISIBLE — essentials only -->
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Property Name</label><input type="text" class="form-input" id="q-name" placeholder="As listed on Apartments.com" /></div>
+      <div class="form-group"><label class="form-label">Apartments.com URL</label><input type="url" class="form-input" id="q-url" placeholder="https://www.apartments.com/..." /></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label">Decision Status</label>
+        <select class="form-select" id="q-status">
+          <option value="researching">Researching</option>
+          <option value="touring">Touring</option>
+          <option value="waiting">Waiting for Numbers</option>
+          <option value="app-ready">Application Ready</option>
+          <option value="applied">Applied</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+          <option value="eliminated">Eliminated</option>
+          <option value="leader">Current Leader</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Apartment Score (0–10)</label><input type="number" class="form-input" id="q-score" min="0" max="10" placeholder="e.g. 7" /></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label class="form-label" style="color:#1F9D6B">Why It Wins</label><textarea class="form-textarea" id="q-why" placeholder="Great location, covered parking, strong reviews, dog amenities, good special..." style="min-height:54px;border-color:rgba(31,157,107,0.3)"></textarea></div>
+      <div class="form-group"><label class="form-label" style="color:var(--red-label)">Why It Loses</label><textarea class="form-textarea" id="q-why-not" placeholder="No W/D, deposit unknown, utility costs unclear, approval concerns..." style="min-height:54px;border-color:rgba(224,70,110,0.25)"></textarea></div>
+    </div>
+    <div class="form-group" id="q-whynotsigned-group">
+      <label class="form-label" style="color:var(--text);font-size:12px">⚑ Why Not Signed Yet? <span style="color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0">— what's stopping you from signing this lease today</span></label>
+      <input type="text" class="form-input" id="q-why-not-signed" list="whynotsigned-options" placeholder="e.g. Waiting on deposit amount" style="border-color:var(--periwinkle-border);background:white" />
+      <datalist id="whynotsigned-options">
+        <option value="Waiting on deposit amount"></option>
+        <option value="Availability too late"></option>
+        <option value="No in-unit washer/dryer"></option>
+        <option value="Approval concern"></option>
+        <option value="Too expensive"></option>
+        <option value="Poor reviews"></option>
+        <option value="Haven't toured yet"></option>
+        <option value="Nothing — ready to sign"></option>
+      </datalist>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:3px">Leave blank only if nothing is blocking you. This shows up everywhere.</div>
+    </div>
+    <div class="grid-3">
+      <div class="form-group"><label class="form-label">Advertised Rent</label><input type="number" class="form-input" id="q-rent" placeholder="Online listing price" oninput="calcQueueEstimates()" /></div>
+      <div class="form-group"><label class="form-label">Quoted Rent <span style="font-size:10px;color:var(--text-muted);font-weight:400">(post-tour, overrides above)</span></label><input type="number" class="form-input" id="q-charged" placeholder="Actual quoted price after touring" oninput="calcQueueEstimates()" /></div>
+      <div class="form-group"><label class="form-label">Selected Unit Price <span style="font-size:10px;color:var(--text-muted);font-weight:400">(specific unit after tour)</span></label><input type="number" class="form-input" id="q-selected-price" placeholder="e.g. 1375" oninput="calcQueueEstimates()" /></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Apply-Worthy?</label>
+      <div style="display:flex;gap:10px;margin-top:2px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:7px 14px;border:1px solid var(--border);border-radius:6px;flex:1;justify-content:center;transition:all 0.15s" id="aw-yes-label">
+          <input type="radio" name="q-apply-worthy" id="q-aw-yes" value="yes" onchange="updateApplyWorthyStyle()" style="display:none"> ✓ Yes
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:7px 14px;border:1px solid var(--border);border-radius:6px;flex:1;justify-content:center;transition:all 0.15s" id="aw-maybe-label">
+          <input type="radio" name="q-apply-worthy" id="q-aw-maybe" value="maybe" onchange="updateApplyWorthyStyle()" style="display:none"> ? Maybe
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;padding:7px 14px;border:1px solid var(--border);border-radius:6px;flex:1;justify-content:center;transition:all 0.15s" id="aw-no-label">
+          <input type="radio" name="q-apply-worthy" id="q-aw-no" value="no" onchange="updateApplyWorthyStyle()" style="display:none"> ✕ No
+        </label>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="form-group"><label class="form-label">Pet Friendly</label>
+        <select class="form-select" id="q-pet-friendly"><option value="">Unknown</option><option value="yes">Yes</option><option value="no">No</option><option value="cats-only">Cats Only</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">W/D In-Unit?</label>
+        <select class="form-select" id="q-laundry"><option value="">Unknown</option><option value="yes">Yes</option><option value="no">No</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">Approval Confidence</label>
+        <select class="form-select" id="q-approval"><option value="">Unknown</option><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+      </div>
+    </div>
+
+    <!-- ESTIMATES PREVIEW -->
+    <div id="q-estimates-preview" style="background:var(--bg);border-radius:8px;padding:13px;margin-bottom:14px;display:none">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-muted);font-weight:600;margin-bottom:8px">Smart Estimates</div>
+      <div class="grid-3">
+        <div><span class="tag estimated-tag">est.</span> <strong id="q-est-monthly" style="font-size:14px;margin-left:4px">$—</strong> <span style="font-size:12px;color:var(--text-sec)">real monthly</span> <span id="q-est-afford" style="margin-left:6px"></span></div>
+        <div><span class="tag estimated-tag">est.</span> <strong id="q-est-movein" style="font-size:14px;margin-left:4px">$—</strong> <span style="font-size:12px;color:var(--text-sec)">to sign</span></div>
+        <div id="q-specials-preview"></div>
+      </div>
+    </div>
+
+    <!-- INLINE DECISION CARD -->
+    <div class="section-divider">Decision Card — tap to score</div>
+    <div class="decision-grid" id="modal-decision-grid"></div>
+
+    <!-- TIER 2: EXPANDABLE -->
+    <div class="modal-tier-2">
+      <button class="modal-tier-toggle" onclick="toggleModalTier()">
+        <span id="tier-toggle-icon">▸</span> <span id="tier-toggle-label">More details</span>
+      </button>
+      <div class="modal-tier-content" id="modal-tier-2-content">
+        <div class="section-divider">Floor Plan</div>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">Floor Plan</label><input type="text" class="form-input" id="q-floorplan" placeholder="e.g. A2, The Oak" /></div>
+          <div class="form-group"><label class="form-label">Bedrooms</label><input type="text" class="form-input" id="q-beds" placeholder="e.g. 2" /></div>
+          <div class="form-group"><label class="form-label">Bathrooms</label><input type="text" class="form-input" id="q-baths" placeholder="e.g. 2" /></div>
+          <div class="form-group"><label class="form-label">Square Feet</label><input type="number" class="form-input" id="q-sqft" placeholder="e.g. 950" /></div>
+          <div class="form-group"><label class="form-label">Available Date</label><input type="date" class="form-input" id="q-avail" /></div>
+          <div class="form-group"><label class="form-label">Lease Term</label><input type="text" class="form-input" id="q-lease-term" placeholder="e.g. 12 months" /></div>
+        </div>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">Covered Parking?</label><select class="form-select" id="q-covered-parking"><option value="">Unknown</option><option value="yes">Yes</option><option value="no">No — fee required</option></select></div>
+          <div class="form-group"><label class="form-label">Patio / Balcony</label><select class="form-select" id="q-patio"><option value="">Unknown</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+          <div class="form-group"><label class="form-label">Property Type</label><select class="form-select" id="q-type"><option value="apartment">Apartment</option><option value="townhome">Townhome</option><option value="condo">Condo</option><option value="house">House</option></select></div>
+        </div>
+
+        <div class="section-divider">Pricing Details</div>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">Deposit <span class="tag estimated-tag">est. 1 mo</span></label><input type="number" class="form-input" id="q-deposit" placeholder="Auto-estimated" oninput="calcQueueEstimates()" /></div>
+          <div class="form-group"><label class="form-label">Application Fee <span class="tag estimated-tag">est. $75</span></label><input type="number" class="form-input" id="q-app-fee" placeholder="75" oninput="calcQueueEstimates()" /></div>
+          <div class="form-group"><label class="form-label">Admin Fee <span class="tag estimated-tag">est. $150</span></label><input type="number" class="form-input" id="q-admin-fee" placeholder="150" oninput="calcQueueEstimates()" /></div>
+          <div class="form-group"><label class="form-label">Parking Fee <span class="tag estimated-tag">est. $0</span></label><input type="number" class="form-input" id="q-parking" placeholder="0" oninput="calcQueueEstimates()" /></div>
+          <div class="form-group"><label class="form-label">Pet Rent <span class="tag estimated-tag">est. $25</span></label><input type="number" class="form-input" id="q-pet-rent" placeholder="25" oninput="calcQueueEstimates()" /></div>
+          <div class="form-group"><label class="form-label">Pet Deposit <span class="tag estimated-tag">est. $300</span></label><input type="number" class="form-input" id="q-pet-dep" placeholder="300" oninput="calcQueueEstimates()" /></div>
+          <div class="form-group"><label class="form-label">Pet Fee <span class="tag estimated-tag">est. $300</span></label><input type="number" class="form-input" id="q-pet-fee" placeholder="300" oninput="calcQueueEstimates()" /></div>
+        </div>
+
+        <div class="section-divider">Specials / Concessions</div>
+        <div class="grid-3">
+          <div class="form-group"><label class="form-label">Promotion</label><input type="text" class="form-input" id="q-special-promo" placeholder="e.g. 1 month free" /></div>
+          <div class="form-group"><label class="form-label">Dollar Value</label><input type="number" class="form-input" id="q-special-value" placeholder="e.g. 1300" /></div>
+          <div class="form-group"><label class="form-label">Expiration Date</label><input type="date" class="form-input" id="q-special-expires" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Effective Monthly Savings (value ÷ 12)</label><input type="number" class="form-input" id="q-special-monthly" placeholder="e.g. 108" oninput="calcQueueEstimates()" /></div>
+
+        <div class="section-divider">Tour Notes</div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Tour Rating (1–10)</label><input type="number" class="form-input" id="q-tour-rating" min="1" max="10" placeholder="e.g. 8" /></div>
+          <div class="form-group"><label class="form-label">Leasing Agent Rating (1–10)</label><input type="number" class="form-input" id="q-agent-rating" min="1" max="10" placeholder="e.g. 7" /></div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">What I Liked</label><textarea class="form-textarea" id="q-tour-liked" placeholder="Layout, light, location..."></textarea></div>
+          <div class="form-group"><label class="form-label">What I Didn't Like</label><textarea class="form-textarea" id="q-tour-disliked" placeholder="Noise, size, management..."></textarea></div>
+        </div>
+        <div class="form-group"><label class="form-label">Red Flags</label><textarea class="form-textarea" id="q-tour-flags" placeholder="Anything concerning..." style="min-height:48px"></textarea></div>
+        <div class="form-group"><label class="form-label">Would I Live Here?</label>
+          <select class="form-select" id="q-tour-would-live"><option value="">— Undecided —</option><option value="yes">Yes</option><option value="maybe">Maybe</option><option value="no">No</option></select>
+        </div>
+
+        <div class="section-divider">Call Sheet</div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Total move-in cost?</label><input type="text" class="form-input" id="q-cs-movein" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Utilities billed separately?</label><input type="text" class="form-input" id="q-cs-utilities" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Internet providers?</label><input type="text" class="form-input" id="q-cs-internet" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Breed restrictions?</label><input type="text" class="form-input" id="q-cs-breed" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Mandatory monthly fees?</label><input type="text" class="form-input" id="q-cs-fees" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Average utility cost?</label><input type="text" class="form-input" id="q-cs-avg-util" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Parking fee or included?</label><input type="text" class="form-input" id="q-cs-parking" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Lease break policy?</label><input type="text" class="form-input" id="q-cs-lease-break" placeholder="Answer..." /></div>
+          <div class="form-group"><label class="form-label">Earliest move-in date?</label><input type="text" class="form-input" id="q-cs-movein-date" placeholder="Answer..." /></div>
+        </div>
+
+        <div class="section-divider">Contact & Deadlines</div>
+        <div class="grid-2">
+          <div class="form-group"><label class="form-label">Contact Name</label><input type="text" class="form-input" id="q-contact-name" placeholder="Name" /></div>
+          <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="q-phone" placeholder="(xxx) xxx-xxxx" /></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" id="q-email" placeholder="leasing@property.com" /></div>
+          <div class="form-group"><label class="form-label">Tour Date</label><input type="date" class="form-input" id="q-tour-date" /></div>
+          <div class="form-group"><label class="form-label">Follow-Up Date</label><input type="date" class="form-input" id="q-followup" /></div>
+          <div class="form-group"><label class="form-label">Application Deadline</label><input type="date" class="form-input" id="q-app-deadline" /></div>
+          <div class="form-group"><label class="form-label">Approval Notes</label><input type="text" class="form-input" id="q-approval-notes" placeholder="e.g. Need to verify income requirement" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="q-notes" placeholder="Anything from the listing worth noting..."></textarea></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeQueueModal()">Cancel</button>
+      <button class="btn btn-soft" onclick="saveAndPromote()">Save + Mark as Leader</button>
+      <button class="btn btn-primary" onclick="saveQueueItem()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- GRAVEYARD MODAL -->
+<div class="modal-overlay" id="grave-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeGraveModal()">✕</button>
+    <div class="modal-title">Add Rejected Apartment</div>
+    <div class="form-group"><label class="form-label">Property Name</label><input type="text" class="form-input" id="grave-name" placeholder="Property name" /></div>
+    <div class="form-group"><label class="form-label">Reason Rejected</label><textarea class="form-textarea" id="grave-reason" placeholder="Why this one is off the table..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeGraveModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="saveGrave()">Add to Graveyard</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────
+const DECISION_CRITERIA=['Dog Friendly','Safe Area','W/D In-Unit','Fits Budget','Responsive Management','Good Reviews','No Major Red Flags','Can Afford Alone','Would Live Here'];
+const Q_DEFAULTS={appFee:75,adminFee:150,petRent:25,petDep:300,petFee:300,parking:0,internet:70,electric:120,water:50,trash:25,insurance:15,utilSetup:50,aptFees:75,valet:0};
+const MC_DEFAULTS={pet:25,water:50,trash:25,internet:70,electric:120,insurance:15,parking:0,aptfees:75,valet:0,other:0,specials:0};
+const MI_DEFAULTS={app:75,admin:150,deposit:0,petDep:300,petFee:300,firstMonth:0,prorated:0,util:50,other:0,specials:0};
+const CS_FIELDS=['movein','utilities','internet','breed','fees','avg-util','parking','lease-break','movein-date'];
+
+// Affordability bands — Solo = Sierra only; Combined = Sierra + Michael
+const SOLO_PASS=1450, SOLO_STRETCH=1600;       // hard stop $1,650+
+const COMBINED_PASS=1750, COMBINED_STRETCH=2050;
+// Application Readiness checklist — every apartment is measured against these
+const READINESS_ITEMS=[
+  {key:'monthly', label:'Real Monthly Cost Known', blocker:'Monthly Cost Unknown'},
+  {key:'movein',  label:'Move-In Cost Known',      blocker:'Move-In Cost Unknown'},
+  {key:'deposit', label:'Deposit Known',           blocker:'Deposit Unknown'},
+  {key:'petfees', label:'Pet Fees Known',          blocker:'Pet Fees Unknown'},
+  {key:'avail',   label:'Availability Confirmed',  blocker:'Availability Unconfirmed'},
+  {key:'wd',      label:'Washer/Dryer Confirmed',  blocker:'Washer/Dryer Unconfirmed'},
+  {key:'approval',label:'Approval Risk Understood',blocker:'Approval Risk Unknown'}
+];
+
+const STATUS_META={
+  'researching':{label:'Researching',cls:'status-researching'},
+  'touring':{label:'Touring',cls:'status-touring'},
+  'waiting':{label:'Waiting for Numbers',cls:'status-waiting'},
+  'app-ready':{label:'Application Ready',cls:'status-app-ready'},
+  'applied':{label:'Applied',cls:'status-applied'},
+  'approved':{label:'Approved',cls:'status-approved'},
+  'rejected':{label:'Rejected',cls:'status-rejected'},
+  'eliminated':{label:'Eliminated',cls:'status-eliminated'},
+  'leader':{label:'Current Leader',cls:'status-leader'},
+  'found-online':{label:'Researching',cls:'status-researching'},
+  'need-research':{label:'Researching',cls:'status-researching'},
+  'need-call':{label:'Researching',cls:'status-researching'},
+  'tour-scheduled':{label:'Touring',cls:'status-touring'},
+  'toured':{label:'Waiting for Numbers',cls:'status-waiting'},
+  'shortlisted':{label:'Application Ready',cls:'status-app-ready'},
+  'applying':{label:'Applied',cls:'status-applied'},
+};
+
+// ─────────────────────────────────────────────
+// DATA LAYER — Queue is the single source of truth
+// ─────────────────────────────────────────────
+function gd(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f;}catch(e){return f;}}
+function sd(k,v){localStorage.setItem(k,JSON.stringify(v));}
+const getMilestones=()=>gd('acc_milestones',{});
+const saveMilestones=d=>sd('acc_milestones',d);
+const getPriority=()=>gd('acc_priority','');
+const savePriorityData=v=>sd('acc_priority',v);
+const getTasks=()=>gd('acc_tasks',[]);
+const saveTasks=d=>sd('acc_tasks',d);
+const getQueue=()=>gd('acc_queue',[]);
+const saveQueue=d=>sd('acc_queue',d);
+const getApartments=()=>getQueue();
+const getGraveyard=()=>gd('acc_graveyard',[]);
+const saveGraveyard=d=>sd('acc_graveyard',d);
+const getDecisions=()=>gd('acc_decisions',{});
+const saveDecisions=d=>sd('acc_decisions',d);
+const getMonthlyCosts=()=>gd('acc_monthly_costs',{});
+const saveMonthlyCosts=d=>sd('acc_monthly_costs',d);
+const getMoveInCosts=()=>gd('acc_movein_costs',{});
+const saveMoveInCosts=d=>sd('acc_movein_costs',d);
+const getSnapshots=()=>gd('acc_snapshots',[]);
+const saveSnapshots=d=>sd('acc_snapshots',d);
+const getLeaseRisk=()=>gd('acc_lease_risk',{});
+const saveLeaseRisk=d=>sd('acc_lease_risk',d);
+const getMoveTarget=()=>gd('acc_move_target','');
+const saveMoveTargetData=v=>sd('acc_move_target',v);
+// Tour notes and call sheet now merged into queue record
+// But we keep the old keys for backward compat reads during migration
+const getLegacyTourNotes=()=>gd('acc_tour_notes',{});
+const getLegacyCallSheets=()=>gd('acc_callsheets',{});
+
+// ─────────────────────────────────────────────
+// COMPUTED HELPERS
+// ─────────────────────────────────────────────
+function statusBadge(status){
+  const m=STATUS_META[status]||{label:status,cls:'status-researching'};
+  return`<span class="status-badge ${m.cls}">${m.label}</span>`;
+}
+
+function getAptScore(q){
+  if(q.score!==undefined&&q.score!==''&&q.score!==null&&q.score!==''){
+    const manual=parseFloat(q.score);
+    if(!isNaN(manual))return Math.round(manual);
+  }
+  const d=getDecisions()[q.id]||{};
+  const yes=Object.values(d).filter(v=>v==='yes').length;
+  return Math.round((yes/DECISION_CRITERIA.length)*10);
+}
+function isUnscored(q){
+  if(q.score!==undefined&&q.score!==''&&q.score!==null&&q.score!=='')return false;
+  const d=getDecisions()[q.id]||{};
+  return Object.values(d).filter(v=>v==='yes'||v==='no').length===0;
+}
+function scoreRingHtml(q,w,h,fs){
+  const sz=w||44;const fSize=fs||18;
+  const unscored=isUnscored(q);
+  const val=unscored?'—':getAptScore(q);
+  const borderColor=unscored?'var(--border-sec)':'var(--periwinkle)';
+  const textColor=unscored?'var(--text-muted)':'var(--text)';
+  return`<div style="display:inline-flex;align-items:center;justify-content:center;width:${sz}px;height:${sz}px;border-radius:50%;border:3px solid ${borderColor};font-family:var(--display);font-size:${fSize}px;color:${textColor};flex-shrink:0">${val}</div>`;
+}
+
+function computeEstMonthly(q){
+  const base=q.selectedPrice||q.charged||q.rent||0;
+  if(!base)return 0;
+  const petRent=q.petRent||Q_DEFAULTS.petRent;
+  const parking=q.parking||Q_DEFAULTS.parking;
+  const specMonthly=q.specialMonthly||0;
+  return base+petRent+Q_DEFAULTS.electric+Q_DEFAULTS.water+Q_DEFAULTS.trash+Q_DEFAULTS.internet+Q_DEFAULTS.insurance+parking+Q_DEFAULTS.aptFees-specMonthly;
+}
+function computeEstMovein(q){
+  const base=q.selectedPrice||q.charged||q.rent||0;
+  if(!base)return 0;
+  const deposit=q.deposit||base;
+  const appFee=q.appFee||Q_DEFAULTS.appFee;
+  const adminFee=q.adminFee||Q_DEFAULTS.adminFee;
+  const petDep=q.petDep||Q_DEFAULTS.petDep;
+  const petFee=q.petFee||Q_DEFAULTS.petFee;
+  return appFee+adminFee+deposit+petDep+petFee+base+Q_DEFAULTS.utilSetup;
+}
+
+function getRealMonthly(q){
+  const mc=getMonthlyCosts()[q.id];
+  if(mc?.total)return mc.total;
+  return computeEstMonthly(q);
+}
+
+function getMoveInCash(q){
+  const mi=getMoveInCosts()[q.id];
+  if(mi?.total)return mi.total;
+  return computeEstMovein(q);
+}
+
+function getBiggestRisk(q){
+  const risks=[];
+  if(q.petFriendly==='no')risks.push('Not pet friendly');
+  const m=getRealMonthly(q);
+  if(m>=1650)risks.push('Monthly $1,650+');
+  const flags=q.tourFlags||getLegacyTourNotes()[q.id]?.flags||'';
+  if(flags.trim().length>3)risks.push('Tour red flags');
+  if(q.laundry==='no')risks.push('No W/D');
+  if(q.whyNot){const first=q.whyNot.split(/[,\n]/)[0].trim();if(first.length>0)risks.push(first);}
+  return risks.length?risks[0]:'None identified';
+}
+
+function getDataStatus(q){
+  const mc=getMonthlyCosts()[q.id];
+  const mi=getMoveInCosts()[q.id];
+  const costVerified=!!(mc?.total||mi?.total);
+  const tourDone=['touring','waiting','app-ready','applied','approved','leader'].includes(q.status)||(q.tourLiked||q.tourFlags||getLegacyTourNotes()[q.id]);
+  const scored=Object.values(getDecisions()[q.id]||{}).length>0||q.score;
+  return{costVerified:!!costVerified,tourDone:!!tourDone,scored:!!scored};
+}
+
+function dataStatusDots(q){
+  const s=getDataStatus(q);
+  return`<div class="data-dots" title="Costs ${s.costVerified?'verified':'estimated'} · Tour ${s.tourDone?'done':'needed'} · ${s.scored?'Scored':'Not scored'}">
+    <div class="data-dot ${s.costVerified?'verified':'estimated'}" title="Cost data"></div>
+    <div class="data-dot ${s.tourDone?'verified':'estimated'}" title="Tour"></div>
+    <div class="data-dot ${s.scored?'verified':'estimated'}" title="Score"></div>
+  </div>`;
+}
+
+function rankApartments(apts){
+  return [...apts].filter(a=>!['rejected','eliminated'].includes(a.status)).sort((a,b)=>{
+    if(a.status==='leader'&&b.status!=='leader')return -1;
+    if(b.status==='leader'&&a.status!=='leader')return 1;
+    return getAptScore(b)-getAptScore(a);
+  });
+}
+
+function soloAffordBadge(m){
+  if(!m)return'';
+  if(m<=SOLO_PASS)return`<span class="afford-pass">Solo: Pass</span>`;
+  if(m<=SOLO_STRETCH)return`<span class="afford-stretch">Solo: Stretch</span>`;
+  return`<span class="afford-fail">Solo: Fail</span>`;
+}
+function combinedAffordBadge(m){
+  if(!m)return'';
+  if(m<=COMBINED_PASS)return`<span class="afford-pass">Combined: Pass</span>`;
+  if(m<=COMBINED_STRETCH)return`<span class="afford-stretch">Combined: Stretch</span>`;
+  return`<span class="afford-fail">Combined: Fail</span>`;
+}
+function soloLevel(m){return !m?'':m<=SOLO_PASS?'Pass':m<=SOLO_STRETCH?'Stretch':'Fail';}
+function combinedLevel(m){return !m?'':m<=COMBINED_PASS?'Pass':m<=COMBINED_STRETCH?'Stretch':'Fail';}
+
+// ── APPLICATION READINESS ──────────────────────
+// Returns [{key,label,blocker,done}] derived purely from apartment data.
+function getReadinessItems(q){
+  const mc=getMonthlyCosts()[q.id];
+  const mi=getMoveInCosts()[q.id];
+  const petNA=q.petFriendly==='no';
+  const vals={
+    monthly:!!(mc&&mc.total),
+    movein:!!(mi&&mi.total),
+    deposit:!!q.depositEntered,
+    petfees:petNA||!!q.petFeeEntered,
+    avail:!!q.availDate,
+    wd:q.laundry==='yes'||q.laundry==='no',
+    approval:q.approval==='high'||q.approval==='medium'||q.approval==='low'
+  };
+  return READINESS_ITEMS.map(it=>({...it,done:!!vals[it.key]}));
+}
+function readinessCount(q){return getReadinessItems(q).filter(i=>i.done).length;}
+function readinessPct(q){return Math.round((readinessCount(q)/READINESS_ITEMS.length)*100);}
+function isReadyToApply(q){
+  return readinessCount(q)===READINESS_ITEMS.length && getDealBreakers(q).length===0;
+}
+function readyPill(q){
+  const ready=isReadyToApply(q);
+  return`<span class="ready-pill ${ready?'yes':'no'}"><span class="dot"></span>${ready?'Ready':'Not Ready'}</span>`;
+}
+function readinessBar(q){
+  const pct=readinessPct(q);const cnt=readinessCount(q);
+  return`<div class="readiness-row"><div class="readiness-track"><div class="readiness-fill ${pct===100?'full':''}" style="width:${pct}%"></div></div><span class="readiness-pct-label">${cnt}/${READINESS_ITEMS.length} known</span></div>`;
+}
+// Blockers = unmet readiness items + hard deal-breakers (deduped, deal-breakers flagged hard)
+function getApplicationBlockers(q){
+  const out=[];
+  getReadinessItems(q).forEach(i=>{if(!i.done)out.push({text:i.blocker,hard:false});});
+  getDealBreakers(q).forEach(b=>out.push({text:b,hard:true}));
+  const seen=new Set();
+  return out.filter(o=>{const k=o.text.toLowerCase();if(seen.has(k))return false;seen.add(k);return true;});
+}
+function whyNotSignedDisplay(q,inline){
+  const t=(q.whyNotSigned||'').trim();
+  if(inline){
+    if(!t)return'';
+    return`<span class="whynot-inline">⚑ ${escHtml(t)}</span>`;
+  }
+  const ready=isReadyToApply(q);
+  if(!t){
+    return ready
+      ? `<div class="whynot-box clear"><div><div class="whynot-label">Why Not Signed Yet</div><div class="whynot-text">Nothing is blocking you — this one is ready to sign.</div></div></div>`
+      : `<div class="whynot-box"><div><div class="whynot-label">Why Not Signed Yet</div><div class="whynot-text" style="color:var(--text-sec)">Not recorded — add a reason in the listing.</div></div></div>`;
+  }
+  return`<div class="whynot-box"><div><div class="whynot-label">Why Not Signed Yet</div><div class="whynot-text">${escHtml(t)}</div></div></div>`;
+}
+function approvalBadge(l){
+  if(!l)return'';
+  const map={high:'<span class="approval-high">Approval: High</span>',medium:'<span class="approval-medium">Approval: Medium</span>',low:'<span class="approval-low">Approval: Low</span>'};
+  return map[l]||'';
+}
+function getBudgetTag(m){
+  if(!m)return'';
+  if(m<=1450)return'<span class="cost-status cost-green" style="font-size:10px;padding:2px 8px">On Target</span>';
+  if(m<=1600)return'<span class="cost-status cost-yellow" style="font-size:10px;padding:2px 8px">Stretch</span>';
+  if(m<=1649)return'<span class="cost-status cost-orange" style="font-size:10px;padding:2px 8px">Warning</span>';
+  return'<span class="cost-status cost-red" style="font-size:10px;padding:2px 8px">Blocked</span>';
+}
+function daysUntil(dateStr){
+  if(!dateStr)return null;
+  const today=new Date();today.setHours(0,0,0,0);
+  return Math.ceil((new Date(dateStr+'T12:00:00')-today)/86400000);
+}
+function availDisplay(dateStr){
+  if(!dateStr)return'';
+  const d=daysUntil(dateStr);
+  if(d===null)return'';
+  if(d<=0)return`<span class="avail-now">Available Now</span>`;
+  if(d<=30)return`<span class="avail-soon">Available in ${d}d</span>`;
+  return`<span class="avail-later">Available in ${d}d</span>`;
+}
+
+function tourPriorityScore(q){
+  const postTour=['waiting','app-ready','applied','approved','leader'];
+  if(postTour.includes(q.status))return -1; // hide for post-tour
+  let s=0;
+  const m=getRealMonthly(q);
+  if(m>0&&m<=1450)s+=3;
+  if(q.petFriendly==='yes')s+=2;
+  if(q.laundry==='yes')s+=2;
+  if((parseFloat(q.sqft)||0)>=850)s+=2;
+  if(q.availDate){const d=daysUntil(q.availDate);if(d!==null&&d>=0&&d<=30)s+=1;}
+  if(q.patio==='yes')s+=1;
+  return s;
+}
+function tourPriorityBadge(q,showReasons){
+  const s=tourPriorityScore(q);
+  if(s===-1)return''; // post-tour, hide badge
+  const level=s>=7?'high':s>=4?'medium':'low';
+  const labels={high:'High Priority',medium:'Medium Priority',low:'Low Priority'};
+  const badge=`<span class="priority-badge priority-${level}">${labels[level]}</span>`;
+  if(!showReasons)return badge;
+  const reasons=[];
+  const m=getRealMonthly(q);
+  if(m>0&&m<=1450)reasons.push('Within budget');
+  if(q.petFriendly==='yes')reasons.push('Dog friendly');
+  if(q.laundry==='yes')reasons.push('W/D in-unit');
+  if((parseFloat(q.sqft)||0)>=850)reasons.push('850+ sqft');
+  if(q.availDate){const d=daysUntil(q.availDate);if(d!==null&&d>=0&&d<=30)reasons.push('Available soon');}
+  if(!reasons.length)return badge;
+  return badge+`<div class="priority-reasons">${reasons.map(r=>`<span class="priority-reason-item">${r}</span>`).join('')}</div>`;
+}
+
+function getDealBreakers(q){
+  const b=[];
+  if(q.petFriendly==='no')b.push('Not pet friendly');
+  const m=getRealMonthly(q);
+  if(m>=1650)b.push('Monthly $1,650+');
+  const flags=q.tourFlags||getLegacyTourNotes()[q.id]?.flags||'';
+  if(flags.trim().length>3)b.push('Tour red flags noted');
+  if(q.laundry==='no')b.push('No W/D included');
+  // Availability too late: move-in date lands well after the target move date
+  const target=getMoveTarget();
+  if(q.availDate&&target){
+    const lag=Math.round((new Date(q.availDate+'T12:00:00')-new Date(target+'T12:00:00'))/86400000);
+    if(lag>14)b.push('Availability too late');
+  }
+  return b;
+}
+
+function specialsBadge(q){
+  if(!q.specialPromo)return'';
+  const exp=q.specialExpires;
+  const expStr=exp?` · Exp ${exp}`:'';
+  return`<span class="special-badge">${escHtml(q.specialPromo)}${q.specialValue?' ($'+Number(q.specialValue).toLocaleString()+')'  :''}${expStr}</span>`;
+}
+
+function applyWorthyBadge(val){
+  if(!val)return'';
+  if(val==='yes')return`<span style="display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;background:rgba(31,157,107,0.15);color:#178A5D;border:1px solid rgba(31,157,107,0.3)">Apply-Worthy</span>`;
+  if(val==='maybe')return`<span style="display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;background:rgba(194,144,42,0.15);color:#9A6E16;border:1px solid rgba(194,144,42,0.3)">Maybe Apply</span>`;
+  return`<span style="display:inline-block;padding:3px 10px;border-radius:100px;font-size:10px;font-weight:700;text-transform:uppercase;background:var(--red-card);color:var(--red-label);border:1px solid rgba(224,70,110,0.3)">Skip</span>`;
+}
+
+function updateApplyWorthyStyle(){
+  const val=(document.querySelector('input[name="q-apply-worthy"]:checked')||{}).value||'';
+  const styles={
+    yes:{bg:'rgba(31,157,107,0.12)',border:'rgba(31,157,107,0.4)',color:'#178A5D'},
+    maybe:{bg:'rgba(194,144,42,0.10)',border:'rgba(194,144,42,0.4)',color:'#9A6E16'},
+    no:{bg:'var(--red-card)',border:'rgba(224,70,110,0.3)',color:'var(--red-label)'},
+  };
+  ['yes','maybe','no'].forEach(v=>{
+    const lbl=document.getElementById('aw-'+v+'-label');
+    if(!lbl)return;
+    if(val===v){const s=styles[v];lbl.style.background=s.bg;lbl.style.borderColor=s.border;lbl.style.color=s.color;lbl.style.fontWeight='600';}
+    else{lbl.style.background='';lbl.style.borderColor='';lbl.style.color='';lbl.style.fontWeight='';}
+  });
+}
+
+// Post-tour summary for cards (replaces tour priority badge post-tour)
+function postTourSummary(q){
+  const legNotes=getLegacyTourNotes()[q.id];
+  const rating=q.tourRating||legNotes?.rating||'';
+  const wouldLive=q.tourWouldLive||legNotes?.wouldLive||'';
+  if(!rating&&!wouldLive)return'';
+  const wlColor={'yes':'#1F9D6B','maybe':var_color('--yellow'),'no':'var(--red-label)'}[wouldLive]||'var(--text-sec)';
+  return`<span style="font-size:11px;color:var(--text-sec)">${rating?`Tour: <strong>${rating}/10</strong>`:''} ${wouldLive?`<span style="color:${wlColor};font-weight:600">Would live: ${wouldLive}</span>`:''}</span>`;
+}
+function var_color(v){return v;} // passthrough for CSS var refs in JS strings
+
+// ─────────────────────────────────────────────
+// DECISION DEADLINE
+// ─────────────────────────────────────────────
+function saveMoveTarget(){const v=document.getElementById('move-target-input').value;saveMoveTargetData(v);renderDecisionDeadline();}
+function clearMoveTarget(){saveMoveTargetData('');renderDecisionDeadline();renderDashboard();}
+function renderDecisionDeadline(){
+  const v=getMoveTarget();
+  const input=document.getElementById('move-target-input');if(input)input.value=v||'';
+  const el=document.getElementById('dash-deadline');if(!el)return;
+  if(!v){
+    el.innerHTML=`<div class="deadline-sub">No target move date set. Pick the date you need to be moved in by — every apartment is measured against it.</div>`;
+    return;
+  }
+  const d=new Date(v+'T12:00:00');
+  const _today=new Date();_today.setHours(0,0,0,0);
+  const diff=Math.ceil((d-_today)/86400000);
+  const dateStr=d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  const urgency=diff<=14?'urgent':diff<=30?'soon':'';
+  // 60-day decision runway for the meter
+  const pct=Math.max(0,Math.min(100,Math.round((1-(diff/60))*100)));
+  const daysLabel=diff>0?diff:diff===0?'0':Math.abs(diff);
+  const daysWord=diff>0?(diff===1?'day to decide':'days to decide'):diff===0?'decide today':'days past target';
+  el.innerHTML=`
+    <div class="deadline-hero">
+      <div class="deadline-days ${urgency}">${daysLabel}</div>
+      <div class="deadline-sub">${daysWord}</div>
+      <div class="deadline-date-line">Target move-in · ${dateStr}</div>
+      <div class="deadline-meter"><div class="deadline-meter-fill ${urgency}" style="width:${pct}%"></div></div>
+      <div style="font-size:11px;color:var(--text-sec)">${diff<=0?'You are at or past your move date — pick a lease now.':diff<=14?'Final stretch. Lock in your top contender.':diff<=30?'Decision window is closing — narrow to one.':'Plenty of runway, but the leader is already clear.'}</div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────
+// SECTION CLEAR
+// ─────────────────────────────────────────────
+function clearSection(s){
+  if(!confirm('Are you sure? This cannot be undone.'))return;
+  const map={
+    queue:()=>{saveQueue([]);renderQueue();refreshAllSelects();renderDashboard();},
+    graveyard:()=>{saveGraveyard([]);renderGraveyard();},
+    'monthly-costs':()=>{saveMonthlyCosts({});saveMoveInCosts({});renderCompare();renderDashboard();},
+    decisions:()=>{saveDecisions({});renderQueue();}
+  };
+  if(map[s])map[s]();
+}
+
+function clearEverything(){
+  if(!confirm('Start over? This permanently erases every apartment, saved cost, decision, and note. This cannot be undone.'))return;
+  // Remove all app data keys
+  Object.keys(localStorage).filter(k=>k.startsWith('acc_')).forEach(k=>localStorage.removeItem(k));
+  // Keep the seed flag set so the demo data does NOT repopulate — you get a true blank slate
+  localStorage.setItem('acc_seed_v1','1');
+  location.reload();
+}
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+function showPage(id,aptId){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    if(n.getAttribute('onclick')?.includes("'"+id+"'"))n.classList.add('active');
+  });
+  const renders={
+    dashboard:renderDashboard,
+    queue:renderQueue,compare:renderCompare,contender:renderContender,
+    graveyard:renderGraveyard,monthly:renderMonthlySelect,movein:renderMoveinSelect
+  };
+  if(renders[id])renders[id]();
+  if(aptId)setTimeout(()=>openQueueModal(aptId),100);
+}
+
+// ─────────────────────────────────────────────
+// DECISION BOARD (dashboard)
+// ─────────────────────────────────────────────
+function renderDashboard(){
+  const dl=document.getElementById('dash-date-line');
+  if(dl)dl.textContent='Decision board · '+new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  renderTopContenderHero();
+  renderLeaderboard();
+  renderReadyTable();
+  renderBlockersSection();
+  renderDecisionDeadline();
+}
+
+// SECTION 1 — TOP CONTENDER
+function renderTopContenderHero(){
+  const el=document.getElementById('dash-top-contender');if(!el)return;
+  const ranked=rankApartments(getApartments());
+  if(!ranked.length){
+    el.innerHTML=`<div class="card"><div class="empty-state"><div class="empty-state-icon">★</div><div class="empty-state-text">No apartments yet. Add listings in the Discovery Queue and your best option appears here.</div></div></div>`;
+    return;
+  }
+  const top=ranked[0];
+  const score=getAptScore(top);
+  const monthly=getRealMonthly(top);
+  const movein=getMoveInCash(top);
+  const ready=isReadyToApply(top);
+  const reasons=buildWhyNumberOne(top,ranked,monthly,movein,score);
+  el.innerHTML=`
+    <div class="tc-hero ${ready?'is-ready':''}" style="cursor:pointer" onclick="showPage('contender')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0">
+            <span class="rank-badge">#1</span>
+            ${scoreRingHtml(top,48,48,21)}
+          </div>
+          <div>
+            <div class="tc-hero-eyebrow">Should you sign tonight?</div>
+            <div class="tc-hero-name">${escHtml(top.name)}</div>
+            <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;align-items:center">
+              ${readyPill(top)}${statusBadge(top.status)}
+            </div>
+          </div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:var(--periwinkle)">Open decision page →</div>
+      </div>
+      <div class="tc-hero-metrics">
+        <div class="tc-metric"><div class="tc-metric-label">Score</div><div class="tc-metric-value">${isUnscored(top)?'—':score+'/10'}</div></div>
+        <div class="tc-metric"><div class="tc-metric-label">Real Monthly</div><div class="tc-metric-value">${monthly?'$'+Math.round(monthly).toLocaleString():'—'}</div><div class="tc-metric-sub">${getBudgetTag(monthly)}</div></div>
+        <div class="tc-metric"><div class="tc-metric-label">Move-In Cost</div><div class="tc-metric-value">${movein?'$'+Math.round(movein).toLocaleString():'—'}</div></div>
+        <div class="tc-metric"><div class="tc-metric-label">Affordability</div><div class="tc-metric-sub afford-stack">${soloAffordBadge(monthly)||'<span style="font-size:11px;color:var(--text-muted)">Solo —</span>'}${combinedAffordBadge(monthly)||'<span style="font-size:11px;color:var(--text-muted)">Combined —</span>'}</div></div>
+      </div>
+      ${reasons.length?`<div class="why-number-one" style="margin-top:0"><div class="why-number-one-label">Why it's currently #1</div>${reasons.slice(0,4).map(r=>`<div class="why-number-one-item">${r}</div>`).join('')}</div>`:''}
+      ${whyNotSignedDisplay(top)}
+    </div>`;
+}
+
+// SECTION 2 — TOP 3 LEADERBOARD
+function renderLeaderboard(){
+  const el=document.getElementById('dash-leaderboard');if(!el)return;
+  const ranked=rankApartments(getApartments()).slice(0,3);
+  if(!ranked.length){el.innerHTML='<div class="card" style="color:var(--text-muted);font-size:13px">Nothing ranked yet.</div>';return;}
+  el.innerHTML=`<div class="leaderboard">`+ranked.map((q,i)=>{
+    const monthly=getRealMonthly(q);
+    return`<div class="lb-row lb-${i+1}" onclick="showPage('queue','${q.id}')">
+      <div class="lb-rank">${i+1}</div>
+      <div class="lb-name">${escHtml(q.name)}</div>
+      <div>${statusBadge(q.status)}</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:2px">${scoreRingHtml(q,34,34,14)}<span style="font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em">score</span></div>
+      <div><div class="lb-cost-label">Monthly</div><div class="lb-cost">${monthly?'$'+Math.round(monthly).toLocaleString():'—'}</div></div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+
+// SECTION 3 — READY TO APPLY TABLE
+function renderReadyTable(){
+  const el=document.getElementById('dash-ready-table');if(!el)return;
+  const apts=getApartments().filter(a=>!['rejected','eliminated'].includes(a.status));
+  const ranked=rankApartments(getApartments());
+  if(!apts.length){el.innerHTML='<div style="color:var(--text-muted);font-size:13px;padding:4px 0">No active apartments.</div>';return;}
+  const ordered=ranked.filter(a=>apts.find(x=>x.id===a.id));
+  el.innerHTML=`<table class="ready-table"><tbody>`+ordered.map(q=>{
+    return`<tr>
+      <td class="rt-name">${escHtml(q.name)}</td>
+      <td class="rt-status">${readyPill(q)}</td>
+    </tr>`;
+  }).join('')+`</tbody></table>`;
+}
+
+// SECTION 4 — APPLICATION BLOCKERS
+function renderBlockersSection(){
+  const el=document.getElementById('dash-blockers');if(!el)return;
+  const apts=rankApartments(getApartments());
+  const notReady=apts.filter(q=>!isReadyToApply(q));
+  if(!apts.length){el.innerHTML=`<div class="card" style="color:var(--text-muted);font-size:13px">Add apartments to see what’s blocking each one.</div>`;return;}
+  if(!notReady.length){el.innerHTML=`<div class="card" style="border-color:rgba(31,157,107,0.4);background:rgba(31,157,107,0.05)"><div style="font-family:var(--display);font-size:17px;color:#178A5D">No blockers — your contenders are all ready to apply.</div><div style="font-size:13px;color:var(--text-sec);margin-top:4px">Time to sign.</div></div>`;return;}
+  el.innerHTML=`<div class="blocker-list">`+notReady.map(q=>{
+    const blockers=getApplicationBlockers(q).slice(0,4);
+    const hard=blockers.some(b=>b.hard);
+    return`<div class="blocker-row ${hard?'is-dealbreaker':''}" style="cursor:pointer" onclick="showPage('queue','${q.id}')">
+      <div class="blocker-apt">${escHtml(q.name)}</div>
+      <div class="blocker-reasons">
+        ${blockers.map(b=>`<span class="blocker-chip ${b.hard?'hard':''}">${escHtml(b.text)}</span>`).join('')}
+        ${q.whyNotSigned&&q.whyNotSigned.trim()?whyNotSignedDisplay(q,true):''}
+      </div>
+    </div>`;
+  }).join('')+`</div>`;
+}
+
+// ─────────────────────────────────────────────
+// QUEUE MODAL — INLINE DECISION CARD
+// ─────────────────────────────────────────────
+let _modalAptId='';
+
+function renderModalDecisionGrid(id){
+  const grid=document.getElementById('modal-decision-grid');if(!grid)return;
+  const decisions=getDecisions()[id]||{};
+  grid.innerHTML='';
+  DECISION_CRITERIA.forEach((c,i)=>{
+    const val=decisions[i];const div=document.createElement('div');
+    div.className='decision-item'+(val==='yes'?' yes':val==='no'?' no':'');
+    div.innerHTML=`<div class="decision-label">${c}</div><div class="decision-toggle">${val==='yes'?'✓ Yes':val==='no'?'✕ No':'— Pending'}</div>`;
+    div.onclick=()=>{
+      if(!_modalAptId)return;
+      const all=getDecisions();const d=all[_modalAptId]||{};
+      const cur=d[i];d[i]=cur==='yes'?'no':cur==='no'?undefined:'yes';
+      if(d[i]===undefined)delete d[i];all[_modalAptId]=d;saveDecisions(all);
+      renderModalDecisionGrid(_modalAptId);
+    };
+    grid.appendChild(div);
+  });
+  // derived score display
+  const yes=Object.values(decisions).filter(v=>v==='yes').length;
+  const derived=Math.round((yes/DECISION_CRITERIA.length)*10);
+  const scoreEl=document.getElementById('q-score');
+  if(scoreEl&&!scoreEl.value&&yes>0){
+    // show derived as placeholder hint only
+    scoreEl.placeholder=`Derived from card: ${derived}/10`;
+  }
+}
+
+function toggleModalTier(){
+  const content=document.getElementById('modal-tier-2-content');
+  const icon=document.getElementById('tier-toggle-icon');
+  const label=document.getElementById('tier-toggle-label');
+  const isOpen=content.classList.toggle('open');
+  if(icon)icon.textContent=isOpen?'▾':'▸';
+  if(label)label.textContent=isOpen?'Less details':'More details';
+}
+
+function calcQueueEstimates(){
+  const rent=parseFloat(document.getElementById('q-rent').value)||0;
+  const charged=parseFloat(document.getElementById('q-charged').value)||0;
+  const selectedPrice=parseFloat(document.getElementById('q-selected-price').value)||0;
+  const baseRent=selectedPrice||charged||rent;
+  if(!baseRent){document.getElementById('q-estimates-preview').style.display='none';return;}
+  const petRent=parseFloat(document.getElementById('q-pet-rent').value)||Q_DEFAULTS.petRent;
+  const parking=parseFloat(document.getElementById('q-parking').value)||Q_DEFAULTS.parking;
+  const specMonthly=parseFloat(document.getElementById('q-special-monthly').value)||0;
+  const monthly=baseRent+petRent+Q_DEFAULTS.electric+Q_DEFAULTS.water+Q_DEFAULTS.trash+Q_DEFAULTS.internet+Q_DEFAULTS.insurance+parking+Q_DEFAULTS.aptFees-specMonthly;
+  const deposit=parseFloat(document.getElementById('q-deposit').value)||baseRent;
+  const appFee=parseFloat(document.getElementById('q-app-fee').value)||Q_DEFAULTS.appFee;
+  const adminFee=parseFloat(document.getElementById('q-admin-fee').value)||Q_DEFAULTS.adminFee;
+  const petDep=parseFloat(document.getElementById('q-pet-dep').value)||Q_DEFAULTS.petDep;
+  const petFee=parseFloat(document.getElementById('q-pet-fee').value)||Q_DEFAULTS.petFee;
+  const movein=appFee+adminFee+deposit+petDep+petFee+baseRent+Q_DEFAULTS.utilSetup;
+  document.getElementById('q-est-monthly').textContent='$'+Math.round(monthly).toLocaleString();
+  document.getElementById('q-est-movein').textContent='$'+Math.round(movein).toLocaleString();
+  const affordEl=document.getElementById('q-est-afford');if(affordEl)affordEl.innerHTML=soloAffordBadge(monthly);
+  const specEl=document.getElementById('q-specials-preview');
+  if(specEl)specEl.innerHTML=specMonthly>0?`<span class="special-badge">Saves ~$${Math.round(specMonthly)}/mo</span>`:'';
+  document.getElementById('q-estimates-preview').style.display='block';
+}
+
+function openQueueModal(id){
+  _modalAptId=id||'';
+  document.getElementById('queue-modal-id').value=id||'';
+  document.getElementById('queue-modal-title').textContent=id?'Edit Listing':'Add Listing';
+  // Close tier 2 by default
+  const t2=document.getElementById('modal-tier-2-content');
+  const icon=document.getElementById('tier-toggle-icon');
+  const label=document.getElementById('tier-toggle-label');
+  if(t2)t2.classList.remove('open');
+  if(icon)icon.textContent='▸';
+  if(label)label.textContent='More details';
+  // Clear all fields
+  const textFields=['q-name','q-url','q-rent','q-charged','q-selected-price','q-score','q-why','q-why-not','q-why-not-signed',
+    'q-floorplan','q-beds','q-baths','q-sqft','q-deposit','q-app-fee','q-admin-fee','q-parking',
+    'q-pet-rent','q-pet-dep','q-pet-fee','q-special-promo','q-special-value','q-special-monthly',
+    'q-tour-rating','q-agent-rating','q-tour-liked','q-tour-disliked','q-tour-flags',
+    'q-cs-movein','q-cs-utilities','q-cs-internet','q-cs-breed','q-cs-fees','q-cs-avg-util',
+    'q-cs-parking','q-cs-lease-break','q-cs-movein-date',
+    'q-contact-name','q-phone','q-email','q-approval-notes','q-lease-term','q-notes'];
+  textFields.forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
+  // Clear apply-worthy radio
+  document.querySelectorAll('input[name="q-apply-worthy"]').forEach(r=>r.checked=false);
+  updateApplyWorthyStyle();
+  ['q-status','q-pet-friendly','q-laundry','q-covered-parking','q-patio','q-approval','q-tour-would-live','q-type'].forEach(f=>{
+    const el=document.getElementById(f);
+    if(el)el.value=f==='q-status'?'researching':f==='q-type'?'apartment':'';
+  });
+  ['q-avail','q-tour-date','q-followup','q-app-deadline','q-special-expires'].forEach(f=>{const el=document.getElementById(f);if(el)el.value='';});
+  document.getElementById('q-estimates-preview').style.display='none';
+  document.getElementById('q-score').placeholder='e.g. 7';
+
+  if(id){
+    const item=getQueue().find(q=>q.id===id);
+    if(item){
+      // Populate all fields
+      const map={name:'q-name',url:'q-url',rent:'q-rent',charged:'q-charged',selectedPrice:'q-selected-price',score:'q-score',why:'q-why',whyNot:'q-why-not',whyNotSigned:'q-why-not-signed',
+        floorplan:'q-floorplan',beds:'q-beds',baths:'q-baths',sqft:'q-sqft',deposit:'q-deposit',appFee:'q-app-fee',adminFee:'q-admin-fee',
+        parking:'q-parking',petRent:'q-pet-rent',petDep:'q-pet-dep',petFee:'q-pet-fee',
+        specialPromo:'q-special-promo',specialValue:'q-special-value',specialMonthly:'q-special-monthly',
+        tourRating:'q-tour-rating',agentRating:'q-agent-rating',tourLiked:'q-tour-liked',
+        tourDisliked:'q-tour-disliked',tourFlags:'q-tour-flags',
+        csMovein:'q-cs-movein',csUtilities:'q-cs-utilities',csInternet:'q-cs-internet',csBreed:'q-cs-breed',
+        csFees:'q-cs-fees',csAvgUtil:'q-cs-avg-util',csParking:'q-cs-parking',csLease:'q-cs-lease-break',csMoveinDate:'q-cs-movein-date',
+        contactName:'q-contact-name',phone:'q-phone',email:'q-email',approvalNotes:'q-approval-notes',leaseTerm:'q-lease-term',notes:'q-notes'};
+      Object.entries(map).forEach(([k,eid])=>{const el=document.getElementById(eid);if(el&&item[k]!==undefined)el.value=item[k];});
+      // Migrate legacy tour notes if record doesn't have them yet
+      if(!item.tourLiked&&!item.tourFlags){
+        const legNotes=getLegacyTourNotes()[id];
+        if(legNotes){
+          if(legNotes.liked){const el=document.getElementById('q-tour-liked');if(el)el.value=legNotes.liked;}
+          if(legNotes.disliked){const el=document.getElementById('q-tour-disliked');if(el)el.value=legNotes.disliked;}
+          if(legNotes.flags){const el=document.getElementById('q-tour-flags');if(el)el.value=legNotes.flags;}
+          if(legNotes.wouldLive){const el=document.getElementById('q-tour-would-live');if(el)el.value=legNotes.wouldLive;}
+          if(legNotes.rating){const el=document.getElementById('q-tour-rating');if(el)el.value=legNotes.rating;}
+        }
+      }
+      if(!item.csMovein){
+        const legCS=getLegacyCallSheets()[id];
+        if(legCS){
+          const csMap={'movein-cost':'q-cs-movein','utilities':'q-cs-utilities','internet':'q-cs-internet','breed':'q-cs-breed','fees':'q-cs-fees','avg-util':'q-cs-avg-util','parking':'q-cs-parking','lease-break':'q-cs-lease-break','movein-date':'q-cs-movein-date'};
+          Object.entries(csMap).forEach(([k,eid])=>{const el=document.getElementById(eid);if(el&&legCS[k])el.value=legCS[k];});
+        }
+      }
+      ['type','status','petFriendly','laundry','coveredParking','patio','approval','tourWouldLive'].forEach(k=>{
+        const eid=k==='tourWouldLive'?'q-tour-would-live':'q-'+k.replace(/([A-Z])/g,m=>'-'+m.toLowerCase());
+        const el=document.getElementById(eid);if(el&&item[k])el.value=item[k];
+      });
+      if(item.availDate)document.getElementById('q-avail').value=item.availDate;
+      if(item.tourDate)document.getElementById('q-tour-date').value=item.tourDate;
+      if(item.followup)document.getElementById('q-followup').value=item.followup;
+      if(item.appDeadline)document.getElementById('q-app-deadline').value=item.appDeadline;
+      if(item.specialExpires)document.getElementById('q-special-expires').value=item.specialExpires;
+      // Load apply-worthy
+      if(item.applyWorthy){
+        const r=document.getElementById('q-aw-'+item.applyWorthy);
+        if(r){r.checked=true;updateApplyWorthyStyle();}
+      }
+      // Never auto-expand Tier 2 — user expands manually each time
+
+      calcQueueEstimates();
+    }
+  }
+  renderModalDecisionGrid(id||'__new__');
+  document.getElementById('queue-modal').classList.add('open');
+}
+function closeQueueModal(){document.getElementById('queue-modal').classList.remove('open');_modalAptId='';}
+
+function buildQueueItem(id){
+  const rent=parseFloat(document.getElementById('q-rent').value)||0;
+  const charged=parseFloat(document.getElementById('q-charged').value)||0;
+  const selectedPrice=parseFloat(document.getElementById('q-selected-price').value)||0;
+  const baseRent=selectedPrice||charged||rent;
+  const deposit=parseFloat(document.getElementById('q-deposit').value)||baseRent;
+  const appFee=parseFloat(document.getElementById('q-app-fee').value)||Q_DEFAULTS.appFee;
+  const adminFee=parseFloat(document.getElementById('q-admin-fee').value)||Q_DEFAULTS.adminFee;
+  const petRent=parseFloat(document.getElementById('q-pet-rent').value)||Q_DEFAULTS.petRent;
+  const petDep=parseFloat(document.getElementById('q-pet-dep').value)||Q_DEFAULTS.petDep;
+  const petFee=parseFloat(document.getElementById('q-pet-fee').value)||Q_DEFAULTS.petFee;
+  const parking=parseFloat(document.getElementById('q-parking').value)||Q_DEFAULTS.parking;
+  const specMonthly=parseFloat(document.getElementById('q-special-monthly').value)||0;
+  const depositEntered=document.getElementById('q-deposit').value.trim()!=='';
+  const petFeeEntered=document.getElementById('q-pet-fee').value.trim()!==''||document.getElementById('q-pet-dep').value.trim()!=='';
+  const estMonthly=baseRent>0?baseRent+petRent+Q_DEFAULTS.electric+Q_DEFAULTS.water+Q_DEFAULTS.trash+Q_DEFAULTS.internet+Q_DEFAULTS.insurance+parking+Q_DEFAULTS.aptFees-specMonthly:0;
+  const estMovein=baseRent>0?appFee+adminFee+deposit+petDep+petFee+baseRent+Q_DEFAULTS.utilSetup:0;
+  return{
+    id,
+    name:document.getElementById('q-name').value.trim(),
+    url:document.getElementById('q-url').value,
+    type:document.getElementById('q-type').value,
+    status:document.getElementById('q-status').value,
+    why:document.getElementById('q-why').value,
+    whyNot:document.getElementById('q-why-not').value,
+    whyNotSigned:document.getElementById('q-why-not-signed').value,
+    depositEntered,petFeeEntered,
+    score:document.getElementById('q-score').value,
+    floorplan:document.getElementById('q-floorplan').value,
+    beds:document.getElementById('q-beds').value,baths:document.getElementById('q-baths').value,
+    sqft:document.getElementById('q-sqft').value,
+    availDate:document.getElementById('q-avail').value,
+    leaseTerm:document.getElementById('q-lease-term').value,
+    appDeadline:document.getElementById('q-app-deadline').value,
+    laundry:document.getElementById('q-laundry').value,
+    coveredParking:document.getElementById('q-covered-parking').value,
+    patio:document.getElementById('q-patio').value,
+    rent,charged,selectedPrice,
+    applyWorthy:(document.querySelector('input[name="q-apply-worthy"]:checked')||{}).value||'',
+    deposit,appFee,adminFee,parking,
+    petFriendly:document.getElementById('q-pet-friendly').value,petRent,petDep,petFee,
+    specialPromo:document.getElementById('q-special-promo').value,
+    specialValue:parseFloat(document.getElementById('q-special-value').value)||0,
+    specialExpires:document.getElementById('q-special-expires').value,
+    specialMonthly:specMonthly,
+    approval:document.getElementById('q-approval').value,
+    approvalNotes:document.getElementById('q-approval-notes').value,
+    // Tour notes — now part of the apartment record
+    tourRating:document.getElementById('q-tour-rating').value,
+    agentRating:document.getElementById('q-agent-rating').value,
+    tourLiked:document.getElementById('q-tour-liked').value,
+    tourDisliked:document.getElementById('q-tour-disliked').value,
+    tourFlags:document.getElementById('q-tour-flags').value,
+    tourWouldLive:document.getElementById('q-tour-would-live').value,
+    // Call sheet — now part of the apartment record
+    csMovein:document.getElementById('q-cs-movein').value,
+    csUtilities:document.getElementById('q-cs-utilities').value,
+    csInternet:document.getElementById('q-cs-internet').value,
+    csBreed:document.getElementById('q-cs-breed').value,
+    csFees:document.getElementById('q-cs-fees').value,
+    csAvgUtil:document.getElementById('q-cs-avg-util').value,
+    csParking:document.getElementById('q-cs-parking').value,
+    csLease:document.getElementById('q-cs-lease-break').value,
+    csMoveinDate:document.getElementById('q-cs-movein-date').value,
+    contactName:document.getElementById('q-contact-name').value,
+    phone:document.getElementById('q-phone').value,
+    email:document.getElementById('q-email').value,
+    tourDate:document.getElementById('q-tour-date').value,
+    followup:document.getElementById('q-followup').value,
+    notes:document.getElementById('q-notes').value,
+    estMonthly,estMovein
+  };
+}
+
+function saveQueueItem(){
+  const name=document.getElementById('q-name').value.trim();
+  if(!name){alert('Property name required.');return;}
+  const id=document.getElementById('queue-modal-id').value||'q_'+Date.now();
+  const item=buildQueueItem(id);
+  let queue=getQueue();const idx=queue.findIndex(q=>q.id===id);
+  if(idx>=0)queue[idx]=item;else queue.push(item);
+  saveQueue(queue);closeQueueModal();renderQueue();refreshAllSelects();renderDashboard();
+}
+
+function saveAndPromote(){
+  const name=document.getElementById('q-name').value.trim();
+  if(!name){alert('Property name required.');return;}
+  const id=document.getElementById('queue-modal-id').value||'q_'+Date.now();
+  const item=buildQueueItem(id);item.status='leader';
+  let queue=getQueue();const idx=queue.findIndex(q=>q.id===id);
+  if(idx>=0)queue[idx]=item;else queue.push(item);
+  saveQueue(queue);closeQueueModal();renderQueue();refreshAllSelects();renderDashboard();
+}
+
+// ─────────────────────────────────────────────
+// RENDER QUEUE
+// ─────────────────────────────────────────────
+function renderQueue(){
+  let queue=getQueue();
+  const search=(document.getElementById('queue-search')?.value||'').toLowerCase();
+  const filterStatus=document.getElementById('queue-filter-status')?.value||'';
+  const sort=document.getElementById('queue-sort')?.value||'score';
+  const view=document.getElementById('queue-view')?.value||'active';
+  if(search)queue=queue.filter(q=>q.name.toLowerCase().includes(search));
+  if(filterStatus)queue=queue.filter(q=>q.status===filterStatus||(STATUS_META[q.status]?.label||'').includes(filterStatus));
+  if(view==='active')queue=queue.filter(q=>!['rejected','eliminated'].includes(q.status));
+  else{/* show all — eliminated at bottom */queue.sort((a,b)=>{const ea=['rejected','eliminated'].includes(a.status)?1:0,eb=['rejected','eliminated'].includes(b.status)?1:0;return ea-eb;});}
+  const sortElim=(a,b)=>{const ea=['rejected','eliminated'].includes(a.status)?1:0,eb=['rejected','eliminated'].includes(b.status)?1:0;return ea-eb;};
+  if(sort==='score')queue.sort((a,b)=>getAptScore(b)-getAptScore(a)||sortElim(a,b));
+  else if(sort==='readiness')queue.sort((a,b)=>(readinessPct(b)-readinessPct(a))||sortElim(a,b));
+  else if(sort==='status'){
+    const ord={'leader':0,'approved':1,'applied':2,'app-ready':3,'waiting':4,'touring':5,'researching':6,'rejected':7,'eliminated':8};
+    queue.sort((a,b)=>(ord[a.status]||9)-(ord[b.status]||9));
+  }
+  else if(sort==='rent-asc')queue.sort((a,b)=>(a.rent||99999)-(b.rent||99999));
+  else if(sort==='rent-desc')queue.sort((a,b)=>(b.rent||0)-(a.rent||0));
+  else if(sort==='name')queue.sort((a,b)=>a.name.localeCompare(b.name));
+
+  const el=document.getElementById('queue-list');
+  if(!queue.length){el.innerHTML='<div class="empty-state"><div class="empty-state-icon">⊕</div><div class="empty-state-text">No listings yet. Add your first from Apartments.com.</div></div>';return;}
+  const ranked=rankApartments(getQueue());
+  el.innerHTML=queue.map(q=>{
+    const monthly=getRealMonthly(q);
+    const movein=getMoveInCash(q);
+    const rank=ranked.findIndex(r=>r.id===q.id)+1;
+    const dealBreakers=getDealBreakers(q);
+    const hasDealBreaker=dealBreakers.length>0;
+    const isElim=['rejected','eliminated'].includes(q.status);
+    const isLeader=q.status==='leader';
+    const mc=getMonthlyCosts()[q.id];
+    const mi=getMoveInCosts()[q.id];
+    return`
+    <div class="dq-card${isLeader?' is-leader':''}${hasDealBreaker&&!isLeader?' deal-breaker':''}${isElim?' eliminated':''}${rank>0&&rank<=3?' rank-'+rank:''}">
+      <div class="dq-header">
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            ${rank>0&&!isElim?`<span class="rank-badge">#${rank}</span>`:''}
+            <div class="dq-name">${escHtml(q.name)}</div>
+            ${scoreRingHtml(q,32,32,13)}
+            ${!isElim?readyPill(q):statusBadge(q.status)}
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:7px">
+            ${!isElim?statusBadge(q.status):''}
+            ${soloAffordBadge(monthly)}
+            ${combinedAffordBadge(monthly)}
+            ${q.petFriendly==='yes'?'<span class="tag" style="background:rgba(31,157,107,0.12);color:#1F9D6B;border:1px solid rgba(31,157,107,0.2)">Dog OK</span>':q.petFriendly==='no'?'<span class="tag" style="background:var(--red-card);color:var(--red-label)">No Dogs</span>':''}
+            ${q.laundry==='yes'?'<span class="tag" style="background:var(--periwinkle-tint);color:#5B63E0;border:1px solid var(--periwinkle-border)">W/D In-Unit</span>':q.laundry==='no'?'<span class="tag" style="background:var(--red-card);color:var(--red-label)">No W/D</span>':''}
+          </div>
+          ${!isElim?`<div style="max-width:340px">${readinessBar(q)}</div>`:''}
+          <div class="dq-meta" style="margin-top:7px">
+            ${q.beds||q.baths?`<span>${q.beds?q.beds+' bd':''}${q.beds&&q.baths?' / ':''}${q.baths?q.baths+' ba':''}</span>`:''}
+            ${q.sqft?`<span>${Number(q.sqft).toLocaleString()} sqft</span>`:''}
+            ${availDisplay(q.availDate)}
+            ${q.leaseTerm?`<span>${escHtml(q.leaseTerm)}</span>`:''}
+          </div>
+          ${q.whyNotSigned&&q.whyNotSigned.trim()?`<div style="margin-top:8px">${whyNotSignedDisplay(q,true)}</div>`:''}
+          ${hasDealBreaker?`<div class="deal-breaker-alert"><div class="deal-breaker-alert-icon">⚑</div><div><div class="deal-breaker-alert-text">Deal Breaker Detected</div><div class="deal-breaker-alert-items">${dealBreakers.join(' · ')}</div></div></div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:9px;flex-shrink:0">
+          ${monthly?`<div style="text-align:right">
+            <div class="true-cost-label">Real Monthly</div>
+            <div class="true-cost-display">$${Math.round(monthly).toLocaleString()}</div>
+            <div style="margin-top:3px">${getBudgetTag(monthly)}</div>
+            <div style="font-size:10px;color:var(--text-muted);margin-top:2px">${mc?'Verified':'Estimated'}</div>
+          </div>`:'<div style="text-align:right;color:var(--text-muted);font-size:13px">Monthly TBD</div>'}
+          ${movein?`<div style="text-align:right">
+            <div class="true-cost-label">Move-In Cost</div>
+            <div style="font-family:var(--display);font-size:18px;color:var(--text)">$${Math.round(movein).toLocaleString()}</div>
+            <div style="font-size:10px;color:var(--text-muted)">${mi?'Verified':'Estimated'}</div>
+          </div>`:''}
+          <div style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">
+            ${q.url?`<a href="${escHtml(q.url)}" target="_blank" class="btn btn-soft btn-sm">↗</a>`:''}
+            <button class="btn btn-ghost btn-sm" onclick="openQueueModal('${q.id}')">Edit</button>
+            ${!isElim?`<button class="btn btn-ghost btn-sm" style="color:var(--yellow)" onclick="eliminateApt('${q.id}')">Eliminate</button>`:''}
+            <button class="btn btn-danger btn-sm" onclick="deleteQueueItem('${q.id}')">✕</button>
+          </div>
+        </div>
+      </div>
+      ${q.notes?`<div class="apt-notes">${escHtml(q.notes)}</div>`:''}
+    </div>`;
+  }).join('');
+}
+function deleteQueueItem(id){if(!confirm('Remove this listing?'))return;saveQueue(getQueue().filter(q=>q.id!==id));renderQueue();refreshAllSelects();renderDashboard();}
+function eliminateApt(id){
+  const reason=prompt('Why is this apartment eliminated? (kept in the Graveyard)')||'';
+  const queue=getQueue();const idx=queue.findIndex(q=>q.id===id);
+  if(idx<0)return;
+  queue[idx].status='eliminated';
+  queue[idx].eliminatedDate=new Date().toISOString().slice(0,10);
+  if(reason.trim()){queue[idx].eliminatedReason=reason.trim();}
+  saveQueue(queue);renderQueue();renderDashboard();
+}
+
+// ─────────────────────────────────────────────
+// COMPARE TABLE
+// ─────────────────────────────────────────────
+let compareSort={key:'score',dir:-1};
+function sortCompare(key){if(compareSort.key===key)compareSort.dir*=-1;else{compareSort.key=key;compareSort.dir=-1;}renderCompare();}
+function renderCompare(){
+  const apts=getApartments().filter(a=>!['rejected','eliminated'].includes(a.status));
+  const mc=getMonthlyCosts();const mi=getMoveInCosts();
+  const data=apts.map(a=>({...a,monthly:getRealMonthly(a),movein:getMoveInCash(a),score:getAptScore(a),readiness:readinessPct(a),charged:a.charged||a.rent||0}));
+  const{key,dir}=compareSort;
+  data.sort((a,b)=>{const av=a[key]||'',bv=b[key]||'';if(typeof av==='number')return(av-bv)*dir;return av.toString().localeCompare(bv.toString())*dir;});
+  const topId=rankApartments(getApartments())[0]?.id;
+  document.querySelectorAll('.sort-arrow').forEach(el=>el.textContent='');
+  const se=document.getElementById('sort-'+key);if(se)se.textContent=dir>0?' ↑':' ↓';
+  const tbody=document.getElementById('compare-tbody');
+  if(!data.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:22px;color:var(--text-muted)">No apartments to compare yet.</td></tr>';return;}
+  tbody.innerHTML=data.map(a=>{
+    const wns=(a.whyNotSigned||'').trim();
+    return`
+    <tr class="${a.id===topId?'top-row':''}">
+      <td>
+        <strong>${escHtml(a.name)}</strong>
+        ${a.why?`<div style="font-size:11px;color:#1F9D6B;font-style:italic">${escHtml(a.why.substring(0,50))}</div>`:''}
+      </td>
+      <td><strong>${isUnscored(a)?'—':a.score+'/10'}</strong></td>
+      <td>${a.monthly?`<strong>$${Math.round(a.monthly).toLocaleString()}</strong> ${getBudgetTag(a.monthly)}`:'—'}</td>
+      <td>${a.movein?'$'+Math.round(a.movein).toLocaleString():'—'}</td>
+      <td>${soloAffordBadge(a.monthly)||'—'}</td>
+      <td>${combinedAffordBadge(a.monthly)||'—'}</td>
+      <td>${readyPill(a)}<div style="font-size:10px;color:var(--text-muted);margin-top:3px">${readinessCount(a)}/${READINESS_ITEMS.length} known</div></td>
+      <td style="max-width:170px">${wns?`<span style="color:#9A6E16">${escHtml(wns)}</span>`:isReadyToApply(a)?'<span style="color:#178A5D">Ready to sign</span>':'<span style="color:var(--text-muted)">—</span>'}</td>
+      <td>${statusBadge(a.status)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// TOP CONTENDER
+// ─────────────────────────────────────────────
+function buildWhyNumberOne(top,ranked,monthly,movein,score){
+  const reasons=[];
+  const allM=ranked.map(a=>getRealMonthly(a)).filter(v=>v>0);
+  const allMI=ranked.map(a=>getMoveInCash(a)).filter(v=>v>0);
+  if(score===Math.max(...ranked.map(a=>getAptScore(a))))reasons.push('Highest score');
+  if(monthly&&allM.length>1&&monthly===Math.min(...allM))reasons.push('Lowest real monthly cost');
+  if(movein&&allMI.length>1&&movein===Math.min(...allMI))reasons.push('Lowest move-in cost');
+  if(top.petFriendly==='yes')reasons.push('Dog friendly');
+  if(top.laundry==='yes')reasons.push('W/D in-unit');
+  if(top.sqft&&parseFloat(top.sqft)===Math.max(...ranked.map(a=>parseFloat(a.sqft)||0)))reasons.push('Largest sqft');
+  if(top.availDate){const d=daysUntil(top.availDate);if(d!==null&&d<=30)reasons.push('Available soon');}
+  if(top.approval==='high')reasons.push('High approval confidence');
+  if(top.status==='leader')reasons.push('Marked as Current Leader');
+  return reasons;
+}
+
+function renderContender(){
+  const ranked=rankApartments(getApartments());
+  const el=document.getElementById('contender-content');
+  if(!ranked.length){el.innerHTML='<div class="empty-state"><div class="empty-state-icon">★</div><div class="empty-state-text">Add apartments in Discovery Queue to see your top contender.</div></div>';return;}
+  const top=ranked[0];
+  const monthly=getRealMonthly(top);const movein=getMoveInCash(top);
+  const score=getAptScore(top);
+  const dealBreakers=getDealBreakers(top);
+  const whyReasons=buildWhyNumberOne(top,ranked,monthly,movein,score);
+  const mc=getMonthlyCosts()[top.id];const mi=getMoveInCosts()[top.id];
+  const ready=isReadyToApply(top);
+  const items=getReadinessItems(top);
+  const blockers=getApplicationBlockers(top);
+  const runner=ranked[1];
+  // Decision summary text
+  let summary;
+  if(ready){
+    summary=`If you had to sign tonight, choose <em>${escHtml(top.name)}</em>. It's your highest-scoring option at <em>$${Math.round(monthly).toLocaleString()}/mo</em> (${soloLevel(monthly)?'solo '+soloLevel(monthly).toLowerCase():'—'}, combined ${combinedLevel(monthly).toLowerCase()||'—'}), every cost is known, and nothing is blocking the application.`;
+  }else{
+    const b=blockers[0]?blockers[0].text:'open questions remain';
+    summary=`<em>${escHtml(top.name)}</em> is in front${runner?` (ahead of ${escHtml(runner.name)})`:''}, but you can't sign tonight — ${escHtml(b.toLowerCase())}${blockers.length>1?` (+${blockers.length-1} more)`:''}. Resolve it to make this a clean ${soloLevel(monthly)==='Pass'?'solo':'combined'} decision.`;
+  }
+  el.innerHTML=`
+    <div class="contender-block">
+      <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0">
+          <span class="rank-badge">#1</span>
+          ${scoreRingHtml(top,50,50,22)}
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div style="display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:5px">${readyPill(top)}${statusBadge(top.status)}</div>
+          <div class="contender-name">${escHtml(top.name)}</div>
+          <div class="afford-pair" style="margin-top:7px">${soloAffordBadge(monthly)||'<span style="font-size:11px;color:var(--text-muted)">Solo —</span>'} ${combinedAffordBadge(monthly)||'<span style="font-size:11px;color:var(--text-muted)">Combined —</span>'}</div>
+        </div>
+      </div>
+      <!-- DECISION SNAPSHOT -->
+      <div class="snapshot-strip" style="margin-top:14px">
+        <div class="snap-cell"><div class="snap-cell-label">Score</div><div class="snap-cell-value">${isUnscored(top)?'—':score+'/10'}</div></div>
+        <div class="snap-cell"><div class="snap-cell-label">Real Monthly</div><div class="snap-cell-value">${monthly?'$'+Math.round(monthly).toLocaleString():'—'}</div><div class="snap-cell-sub">${getBudgetTag(monthly)}${mc?'<span class="tag entered-tag" style="margin-left:3px">verified</span>':'<span class="tag estimated-tag" style="margin-left:3px">est.</span>'}</div></div>
+        <div class="snap-cell"><div class="snap-cell-label">Move-In Cost</div><div class="snap-cell-value">${movein?'$'+Math.round(movein).toLocaleString():'—'}</div><div class="snap-cell-sub">${mi?'<span class="tag entered-tag">verified</span>':'<span class="tag estimated-tag">est.</span>'}</div></div>
+        <div class="snap-cell"><div class="snap-cell-label">Readiness</div><div class="snap-cell-value">${readinessPct(top)}%</div><div class="snap-cell-sub" style="font-size:11px;color:var(--text-sec)">${readinessCount(top)}/${READINESS_ITEMS.length} known</div></div>
+      </div>
+      <!-- WHY WINS / LOSES -->
+      ${(top.why||top.whyNot)?`<div class="why-pair" style="margin-top:12px">
+        ${top.why?`<div class="why-box why-box-pro"><div class="why-box-label">Why It Wins</div><div class="why-box-text">${escHtml(top.why)}</div></div>`:'<div></div>'}
+        ${top.whyNot?`<div class="why-box why-box-risk"><div class="why-box-label">Why It Loses</div><div class="why-box-text">${escHtml(top.whyNot)}</div></div>`:'<div></div>'}
+      </div>`:''}
+      ${whyReasons.length?`<div class="why-number-one"><div class="why-number-one-label">Why This Is #1</div>${whyReasons.map(r=>`<div class="why-number-one-item">${r}</div>`).join('')}</div>`:''}
+      <!-- WHY NOT SIGNED YET -->
+      ${whyNotSignedDisplay(top)}
+      ${dealBreakers.length?`<div class="deal-breaker-alert" style="margin-top:10px"><div class="deal-breaker-alert-icon">⚑</div><div><div class="deal-breaker-alert-text">Deal Breaker Detected</div><div class="deal-breaker-alert-items">${dealBreakers.join(' · ')}</div></div></div>`:''}
+      <!-- APPLICATION READINESS -->
+      <div style="margin-top:14px;padding:14px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);font-weight:600">Application Readiness</span>
+          <span style="font-size:12px;color:var(--text-sec);font-weight:600">${readinessPct(top)}% · ${ready?'<span style="color:#178A5D">Ready to apply</span>':'<span style="color:#9A6E16">Not ready</span>'}</span>
+        </div>
+        ${readinessBar(top)}
+        <div class="readiness-checklist">
+          ${items.map(it=>`<div class="rc-item ${it.done?'known':''}"><div class="rc-check">${it.done?'✓':''}</div><span>${it.label}</span></div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        ${top.url?`<a href="${escHtml(top.url)}" target="_blank" class="btn btn-soft">↗ Apartments.com</a>`:''}
+        <button class="btn btn-ghost" onclick="openQueueModal('${top.id}')">Edit Apartment</button>
+        <button class="btn btn-ghost" onclick="showPage('compare')">Compare All →</button>
+      </div>
+    </div>
+    <!-- DECISION SUMMARY -->
+    <div class="decision-summary">
+      <div class="decision-summary-label">Decision Summary — if you signed tonight</div>
+      <div class="decision-summary-text">${summary}</div>
+    </div>
+    ${runner?`<div style="margin-top:12px;font-size:13px;color:var(--text-sec)">Runner-up · <strong style="color:var(--text)">${escHtml(runner.name)}</strong> · Score ${getAptScore(runner)}/10 · $${Math.round(getRealMonthly(runner)).toLocaleString()||'—'}/mo · ${readyPill(runner)}</div>`:''}
+  `;
+}
+
+// ─────────────────────────────────────────────
+// GRAVEYARD
+// ─────────────────────────────────────────────
+function renderGraveyard(){
+  const el=document.getElementById('graveyard-list');
+  // Eliminated/rejected apartments from the queue
+  const buried=getQueue().filter(q=>['eliminated','rejected'].includes(q.status)).map(q=>({
+    name:q.name,
+    reason:q.eliminatedReason||q.whyNotSigned||q.whyNot||'No reason recorded',
+    date:q.eliminatedDate||'',
+    id:q.id,fromQueue:true
+  }));
+  // Manually-added graveyard entries
+  const manual=getGraveyard().map((g,i)=>({name:g.name,reason:g.reason||'No reason recorded',date:g.date||'',idx:i,fromQueue:false}));
+  const all=[...buried,...manual];
+  if(!all.length){el.innerHTML=`<div class="empty-state"><div class="empty-state-icon">✕</div><div class="empty-state-text">Nothing buried yet. Eliminated apartments land here so you don’t reconsider them.</div></div>`;return;}
+  el.innerHTML=`<div style="font-size:12px;color:var(--text-sec);margin-bottom:10px">${all.length} apartment${all.length===1?'':'s'} off the table — already decided against. Don't reopen these.</div>`+all.map(g=>`
+    <div class="grave-card">
+      <span style="color:var(--red-label);font-size:15px">✕</span>
+      <span class="grave-name">${escHtml(g.name)}</span>
+      <span class="grave-reason">${escHtml(g.reason)}</span>
+      <span style="font-size:11px;color:var(--text-muted);min-width:84px;text-align:right">${g.date?formatDate(g.date):'—'}</span>
+      ${g.fromQueue
+        ? `<button class="btn btn-ghost btn-sm" onclick="restoreApt('${g.id}')">Restore</button>`
+        : `<button class="btn btn-ghost btn-sm" onclick="deleteGrave(${g.idx})">Remove</button>`}
+    </div>`).join('');
+}
+function restoreApt(id){
+  if(!confirm('Bring this apartment back into active consideration?'))return;
+  const queue=getQueue();const idx=queue.findIndex(q=>q.id===id);
+  if(idx<0)return;
+  queue[idx].status='researching';delete queue[idx].eliminatedDate;delete queue[idx].eliminatedReason;
+  saveQueue(queue);renderGraveyard();renderQueue();renderDashboard();
+}
+function openGraveModal(){document.getElementById('grave-name').value='';document.getElementById('grave-reason').value='';document.getElementById('grave-modal').classList.add('open');}
+function closeGraveModal(){document.getElementById('grave-modal').classList.remove('open');}
+function saveGrave(){const n=document.getElementById('grave-name').value.trim();if(!n){alert('Name required.');return;}const g=getGraveyard();g.push({name:n,reason:document.getElementById('grave-reason').value,date:new Date().toISOString().slice(0,10)});saveGraveyard(g);closeGraveModal();renderGraveyard();}
+function deleteGrave(i){const g=getGraveyard();g.splice(i,1);saveGraveyard(g);renderGraveyard();}
+
+// ─────────────────────────────────────────────
+// MONTHLY COST
+// ─────────────────────────────────────────────
+function renderMonthlySelect(){
+  const sel=document.getElementById('monthly-apt-select');
+  sel.innerHTML='<option value="">— Choose an apartment —</option><option value="__custom__">Custom Entry</option>'+getApartments().map(a=>`<option value="${a.id}">${escHtml(a.name)}</option>`).join('');
+}
+function loadMonthlyCost(){
+  clearMonthlyFields();const id=document.getElementById('monthly-apt-select').value;
+  if(!id||id==='__custom__'){calcMonthly();return;}
+  const apt=getApartments().find(a=>a.id===id);
+  if(apt){
+    if(apt.charged)document.getElementById('mc-charged').value=apt.charged;
+    else if(apt.rent)document.getElementById('mc-rent').value=apt.rent;
+    if(apt.petRent&&apt.petRent!==Q_DEFAULTS.petRent)document.getElementById('mc-pet').value=apt.petRent;
+    if(apt.parking&&apt.parking!==Q_DEFAULTS.parking)document.getElementById('mc-parking').value=apt.parking;
+    if(apt.specialMonthly)document.getElementById('mc-specials').value=apt.specialMonthly;
+  }
+  const saved=getMonthlyCosts()[id];
+  if(saved)['charged','rent','pet','water','trash','internet','electric','insurance','parking','aptfees','valet','other','specials'].forEach(f=>{const el=document.getElementById('mc-'+f);if(el&&saved[f]!==undefined)el.value=saved[f];});
+  calcMonthly();
+}
+function clearMonthlyFields(){['charged','rent','pet','water','trash','internet','electric','insurance','parking','aptfees','valet','other','specials'].forEach(f=>document.getElementById('mc-'+f).value='');}
+function getVal(id,def){const v=document.getElementById(id)?.value;return v===''||v===undefined?def:parseFloat(v)||0;}
+function calcMonthly(){
+  const charged=getVal('mc-charged',0);const rent=getVal('mc-rent',0);const base=charged||rent;
+  const pet=getVal('mc-pet',MC_DEFAULTS.pet),water=getVal('mc-water',MC_DEFAULTS.water),trash=getVal('mc-trash',MC_DEFAULTS.trash),internet=getVal('mc-internet',MC_DEFAULTS.internet),electric=getVal('mc-electric',MC_DEFAULTS.electric),insurance=getVal('mc-insurance',MC_DEFAULTS.insurance),parking=getVal('mc-parking',MC_DEFAULTS.parking),aptfees=getVal('mc-aptfees',MC_DEFAULTS.aptfees),valet=getVal('mc-valet',MC_DEFAULTS.valet),other=getVal('mc-other',MC_DEFAULTS.other),specials=getVal('mc-specials',0);
+  const total=base+pet+water+trash+internet+electric+insurance+parking+aptfees+valet+other-specials;
+  document.getElementById('monthly-total').textContent=total?'$'+total.toLocaleString():'$—';
+  const statusEl=document.getElementById('monthly-status');const affordEl=document.getElementById('monthly-afford');const vsEl=document.getElementById('monthly-vs-adv');
+  if(!total){statusEl.innerHTML='';if(affordEl)affordEl.innerHTML='';if(vsEl)vsEl.textContent='';return;}
+  if(total<=1450)statusEl.innerHTML='<span class="cost-status cost-green">On Target ($1,250–$1,450)</span>';
+  else if(total<=1600)statusEl.innerHTML='<span class="cost-status cost-yellow">Stretch ($1,451–$1,600)</span>';
+  else if(total<=1649)statusEl.innerHTML='<span class="cost-status cost-orange">Warning ($1,601–$1,649)</span>';
+  else statusEl.innerHTML='<span class="cost-status cost-red">Blocked ($1,650+)</span>';
+  if(affordEl)affordEl.innerHTML=soloAffordBadge(total);
+  if(vsEl&&charged&&rent&&charged!==rent){const diff=charged-rent;vsEl.textContent=`Apt charge ${diff>0?'+':''}$${diff.toLocaleString()} vs advertised rent`;vsEl.style.color=diff>0?'var(--red-label)':'#1F9D6B';}else if(vsEl)vsEl.textContent='';
+}
+function saveMonthlyCost(){
+  const id=document.getElementById('monthly-apt-select').value;
+  if(!id||id==='__custom__'){alert('Select an apartment first.');return;}
+  const charged=getVal('mc-charged',0),rent=getVal('mc-rent',0),base=charged||rent,pet=getVal('mc-pet',MC_DEFAULTS.pet),water=getVal('mc-water',MC_DEFAULTS.water),trash=getVal('mc-trash',MC_DEFAULTS.trash),internet=getVal('mc-internet',MC_DEFAULTS.internet),electric=getVal('mc-electric',MC_DEFAULTS.electric),insurance=getVal('mc-insurance',MC_DEFAULTS.insurance),parking=getVal('mc-parking',MC_DEFAULTS.parking),aptfees=getVal('mc-aptfees',MC_DEFAULTS.aptfees),valet=getVal('mc-valet',MC_DEFAULTS.valet),other=getVal('mc-other',MC_DEFAULTS.other),specials=getVal('mc-specials',0);
+  const total=base+pet+water+trash+internet+electric+insurance+parking+aptfees+valet+other-specials;
+  const all=getMonthlyCosts();all[id]={charged,rent,pet,water,trash,internet,electric,insurance,parking,aptfees,valet,other,specials,total};saveMonthlyCosts(all);
+  alert('Real monthly cost saved.');
+}
+
+// ─────────────────────────────────────────────
+// MOVE-IN COST
+// ─────────────────────────────────────────────
+function renderMoveinSelect(){
+  const sel=document.getElementById('movein-apt-select');
+  sel.innerHTML='<option value="">— Choose an apartment —</option><option value="__custom__">Custom Entry</option>'+getApartments().map(a=>`<option value="${a.id}">${escHtml(a.name)}</option>`).join('');
+}
+function loadMoveinCost(){
+  clearMoveinFields();const id=document.getElementById('movein-apt-select').value;
+  if(!id||id==='__custom__'){calcMovein();return;}
+  const apt=getApartments().find(a=>a.id===id);
+  const saved=getMoveInCosts()[id];
+  if(saved){const ks=['app','admin','deposit','petDep','petFee','firstMonth','prorated','util','other','specials'];const ids=['mi-app','mi-admin','mi-deposit','mi-pet-dep','mi-pet-fee','mi-first-month','mi-prorated','mi-util','mi-other','mi-specials'];ks.forEach((k,i)=>{const el=document.getElementById(ids[i]);if(el&&saved[k]!==undefined)el.value=saved[k];});}
+  else if(apt){const base=apt.charged||apt.rent||0;if(base){document.getElementById('mi-deposit').value=base;document.getElementById('mi-first-month').value=base;}if(apt.appFee)document.getElementById('mi-app').value=apt.appFee;if(apt.adminFee)document.getElementById('mi-admin').value=apt.adminFee;if(apt.petDep)document.getElementById('mi-pet-dep').value=apt.petDep;if(apt.petFee)document.getElementById('mi-pet-fee').value=apt.petFee;if(apt.specialValue)document.getElementById('mi-specials').value=apt.specialValue;}
+  calcMovein();
+}
+function clearMoveinFields(){['mi-app','mi-admin','mi-deposit','mi-pet-dep','mi-pet-fee','mi-first-month','mi-prorated','mi-util','mi-other','mi-specials'].forEach(id=>document.getElementById(id).value='');}
+function getValMI(id,def){const v=document.getElementById(id)?.value;return v===''||v===undefined?def:parseFloat(v)||0;}
+function calcMovein(){
+  const apt=getApartments().find(a=>a.id===document.getElementById('movein-apt-select').value);
+  const base=apt?.charged||apt?.rent||0;
+  const app=getValMI('mi-app',MI_DEFAULTS.app),admin=getValMI('mi-admin',MI_DEFAULTS.admin),deposit=getValMI('mi-deposit',base||MI_DEFAULTS.deposit),petDep=getValMI('mi-pet-dep',MI_DEFAULTS.petDep),petFee=getValMI('mi-pet-fee',MI_DEFAULTS.petFee),first=getValMI('mi-first-month',base||MI_DEFAULTS.firstMonth),prorated=getValMI('mi-prorated',0),util=getValMI('mi-util',MI_DEFAULTS.util),other=getValMI('mi-other',0),specials=getValMI('mi-specials',0);
+  const total=app+admin+deposit+petDep+petFee+first+prorated+util+other-specials;
+  document.getElementById('movein-total').textContent=total?'$'+total.toLocaleString():'$—';
+  const gapEl=document.getElementById('movein-gap-display');if(!gapEl)return;
+  gapEl.innerHTML=total?'<div style="font-size:11px;color:var(--text-muted)">Cash required to sign the lease</div>':'';
+}
+function saveMoveinCost(){
+  const id=document.getElementById('movein-apt-select').value;
+  if(!id||id==='__custom__'){alert('Select an apartment first.');return;}
+  const apt=getApartments().find(a=>a.id===id);const base=apt?.charged||apt?.rent||0;
+  const app=getValMI('mi-app',MI_DEFAULTS.app),admin=getValMI('mi-admin',MI_DEFAULTS.admin),deposit=getValMI('mi-deposit',base),petDep=getValMI('mi-pet-dep',MI_DEFAULTS.petDep),petFee=getValMI('mi-pet-fee',MI_DEFAULTS.petFee),first=getValMI('mi-first-month',base),prorated=getValMI('mi-prorated',0),util=getValMI('mi-util',MI_DEFAULTS.util),other=getValMI('mi-other',0),specials=getValMI('mi-specials',0);
+  const total=app+admin+deposit+petDep+petFee+first+prorated+util+other-specials;
+  const all=getMoveInCosts();all[id]={app,admin,deposit,petDep,petFee,firstMonth:first,prorated,util,other,specials,total};saveMoveInCosts(all);
+  alert('Move-in cash required saved.');
+}
+
+// ─────────────────────────────────────────────
+// DATE HELPER
+// ─────────────────────────────────────────────
+function formatDate(str){const d=new Date(str+'T12:00:00');return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});}
+
+// ─────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────
+function refreshAllSelects(){
+  const apts=getApartments();
+  const optsFull='<option value="">— Choose an apartment —</option><option value="__custom__">Custom Entry</option>'+apts.map(a=>`<option value="${a.id}">${escHtml(a.name)}</option>`).join('');
+  ['monthly-apt-select','movein-apt-select'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=optsFull;});
+}
+function escHtml(str){if(!str)return'';return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});});
+
+// ─────────────────────────────────────────────
+// SEED — a realistic "sign tonight" scenario (first run only)
+// ─────────────────────────────────────────────
+function seedIfEmpty(){
+  if(localStorage.getItem('acc_seed_v1'))return;
+  if(getQueue().length)return; // never clobber real data
+  const d=(n)=>{const x=new Date();x.setHours(12,0,0,0);x.setDate(x.getDate()+n);return x.toISOString().slice(0,10);};
+  const target=d(24);
+  const apts=[
+    {id:'seed_oak',name:'Oak Crossing',status:'leader',score:'9',url:'https://www.apartments.com/',
+     why:'Covered parking, in-unit W/D, dog park on-site, strong reviews, and a 6-weeks-free special.',
+     whyNot:'Kitchen is a touch smaller than Stone Creek.',whyNotSigned:'',
+     rent:1150,charged:1150,beds:'2',baths:'2',sqft:'910',leaseTerm:'12 months',
+     petFriendly:'yes',laundry:'yes',approval:'high',availDate:d(10),
+     depositEntered:true,petFeeEntered:true,deposit:1150,petFee:300,petDep:300,petRent:25,
+     specialPromo:'6 weeks free',specialValue:1610,specialMonthly:134},
+    {id:'seed_stone',name:'Stone Creek',status:'researching',score:'8',url:'https://www.apartments.com/',
+     why:'Biggest floor plan, quiet street, renovated interiors, walkable to the park.',
+     whyNot:'Deposit amount still unconfirmed — leasing office hasn’t called back.',
+     whyNotSigned:'Waiting on deposit amount',
+     rent:1190,charged:1190,beds:'2',baths:'2',sqft:'985',leaseTerm:'12 months',
+     petFriendly:'yes',laundry:'yes',approval:'medium',availDate:d(20),
+     depositEntered:false,petFeeEntered:true,petFee:300,petDep:300,petRent:30},
+    {id:'seed_tower',name:'The Tower',status:'researching',score:'7',url:'https://www.apartments.com/',
+     why:'Rooftop amenities, downtown location, high approval odds, responsive management.',
+     whyNot:'No in-unit washer/dryer — shared laundry only.',
+     whyNotSigned:'No in-unit washer/dryer',
+     rent:1230,charged:1230,beds:'1',baths:'1',sqft:'780',leaseTerm:'12 months',
+     petFriendly:'yes',laundry:'no',approval:'high',availDate:d(15),
+     depositEntered:true,petFeeEntered:true,deposit:1230,petFee:350,petDep:300,petRent:25},
+    {id:'seed_abbey',name:'Abbey Park',status:'researching',score:'7',url:'https://www.apartments.com/',
+     why:'Lowest all-in cost, comfortably solo-affordable, decent reviews.',
+     whyNot:'Earliest move-in is well past our target date.',
+     whyNotSigned:'Move-in date is after our target',
+     rent:1120,charged:1120,beds:'2',baths:'1',sqft:'860',leaseTerm:'12 months',
+     petFriendly:'yes',laundry:'yes',approval:'medium',availDate:d(69),
+     depositEntered:true,petFeeEntered:true,deposit:1120,petFee:300,petDep:300,petRent:25},
+    {id:'seed_maple',name:'Maple Court',status:'eliminated',score:'6',
+     why:'Nice clubhouse and pool.',whyNot:'All-in cost blows past the hard stop.',
+     whyNotSigned:'Too expensive',
+     rent:1380,charged:1380,beds:'2',baths:'2',sqft:'900',
+     petFriendly:'yes',laundry:'yes',approval:'low',availDate:d(12),
+     depositEntered:true,petFeeEntered:true,deposit:1380,
+     eliminatedReason:'Over budget — $1,735/mo all-in, past the $1,650 hard stop',eliminatedDate:d(-3)}
+  ];
+  saveQueue(apts);
+  saveMonthlyCosts({
+    seed_oak:{total:1438},seed_stone:{total:1495},seed_tower:{total:1560},
+    seed_abbey:{total:1395},seed_maple:{total:1735}
+  });
+  saveMoveInCosts({
+    seed_oak:{total:2750},seed_stone:{total:2900},seed_tower:{total:2980},seed_abbey:{total:2680}
+  });
+  saveMoveTargetData(target);
+  localStorage.setItem('acc_seed_v1','1');
+}
+
+// INIT
+seedIfEmpty();
+renderDashboard();
+</script>
+
+<!-- ── TWEAKS PANEL ── -->
+<div id="tweaks-panel">
+  <div class="tw-head">
+    <span class="tw-title">Tweaks</span>
+    <button class="tw-close" onclick="closeTweaks()">✕</button>
+  </div>
+  <div class="tw-group">
+    <div class="tw-label">Accent</div>
+    <div class="tw-swatches" id="tw-accent"></div>
+  </div>
+  <div class="tw-group">
+    <div class="tw-label">Background</div>
+    <div class="tw-swatches" id="tw-bg"></div>
+  </div>
+  <div class="tw-group">
+    <div class="tw-label">Density</div>
+    <div class="tw-seg" id="tw-density">
+      <button data-val="comfortable">Comfortable</button>
+      <button data-val="compact">Compact</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "accent": "periwinkle",
+  "background": "lavender",
+  "density": "compact"
+}/*EDITMODE-END*/;
+
+const TW_ACCENTS = {
+  pink:       {dot:'#FF00B8', main:'#FF00B8', strong:'#D6009B', tint:'rgba(255,0,184,0.07)', border:'rgba(255,0,184,0.26)'},
+  periwinkle: {dot:'#7E87F8', main:'#7E87F8', strong:'#5B63E0', tint:'rgba(126,135,248,0.10)', border:'rgba(126,135,248,0.30)'},
+  violet:     {dot:'#A24BE0', main:'#A24BE0', strong:'#8230C4', tint:'rgba(162,75,224,0.08)', border:'rgba(162,75,224,0.26)'}
+};
+const TW_BGS = {
+  lavender: {dot:'#F6F1F8', bg:'#F6F1F8', hover:'#F4EFF7'},
+  white:    {dot:'#FBFAFC', bg:'#FBFAFC', hover:'#F3F2F6'},
+  warm:     {dot:'#F3F1EE', bg:'#F3F1EE', hover:'#EEEBE6'}
+};
+
+function applyTweaks(){
+  const r=document.documentElement.style;
+  document.body.classList.add('tw-applying');
+  const a=TW_ACCENTS[TWEAKS.accent]||TW_ACCENTS.pink;
+  r.setProperty('--pink',a.main);r.setProperty('--pink-strong',a.strong);
+  r.setProperty('--pink-tint',a.tint);r.setProperty('--pink-border',a.border);
+  const b=TW_BGS[TWEAKS.background]||TW_BGS.lavender;
+  r.setProperty('--bg',b.bg);r.setProperty('--hover',b.hover);
+  document.body.classList.toggle('density-compact',TWEAKS.density==='compact');
+  // reflect active states
+  document.querySelectorAll('#tw-accent .tw-swatch').forEach(el=>el.classList.toggle('active',el.dataset.val===TWEAKS.accent));
+  document.querySelectorAll('#tw-bg .tw-swatch').forEach(el=>el.classList.toggle('active',el.dataset.val===TWEAKS.background));
+  document.querySelectorAll('#tw-density button').forEach(el=>el.classList.toggle('active',el.dataset.val===TWEAKS.density));
+  // force instant repaint (avoids var()-in-transition freezing) then restore transitions
+  void document.documentElement.offsetWidth;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('tw-applying')));
+}
+function setTweak(k,v){
+  TWEAKS[k]=v;applyTweaks();
+  try{window.parent.postMessage({type:'__edit_mode_set_keys',edits:{[k]:v}},'*');}catch(e){}
+}
+function buildTweaks(){
+  const ac=document.getElementById('tw-accent');
+  Object.entries(TW_ACCENTS).forEach(([k,v])=>{
+    const d=document.createElement('div');d.className='tw-swatch';d.dataset.val=k;
+    d.style.background=v.dot;d.title=k;d.onclick=()=>setTweak('accent',k);ac.appendChild(d);
+  });
+  const bg=document.getElementById('tw-bg');
+  Object.entries(TW_BGS).forEach(([k,v])=>{
+    const d=document.createElement('div');d.className='tw-swatch';d.dataset.val=k;
+    d.style.background=v.dot;d.title=k;d.onclick=()=>setTweak('background',k);bg.appendChild(d);
+  });
+  document.querySelectorAll('#tw-density button').forEach(b=>b.onclick=()=>setTweak('density',b.dataset.val));
+  applyTweaks();
+}
+function closeTweaks(){
+  document.getElementById('tweaks-panel').classList.remove('open');
+  try{window.parent.postMessage({type:'__edit_mode_dismissed'},'*');}catch(e){}
+}
+window.addEventListener('message',e=>{
+  const t=e.data&&e.data.type;
+  if(t==='__activate_edit_mode')document.getElementById('tweaks-panel').classList.add('open');
+  else if(t==='__deactivate_edit_mode')document.getElementById('tweaks-panel').classList.remove('open');
+});
+buildTweaks();
+try{window.parent.postMessage({type:'__edit_mode_available'},'*');}catch(e){}
+</script>
+</body>
+</html>
